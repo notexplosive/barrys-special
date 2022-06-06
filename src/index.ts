@@ -1,5 +1,8 @@
 import * as PIXI from "pixi.js";
 import { Game } from "./limbo/data/game";
+import { preload } from "./mygame/preload"
+import { main } from "./mygame/main"
+import { finishLoad } from './limbo/core/assets';
 
 // Setup DOM
 document.body.style.margin = "0";
@@ -20,9 +23,8 @@ if (process.env.NODE_ENV !== "production") {
 
 document.body.appendChild(app.view);
 
-// Setup Game
-const localGame = new Game(app, isDevBuild);
+export const game = new Game(app, isDevBuild);
+app.ticker.add((dt) => game.update(dt));
 
-app.ticker.add((dt) => localGame.update(dt));
-
-export function game(): Game { return localGame; }
+preload()
+finishLoad(main)
