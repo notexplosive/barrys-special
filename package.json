@@ -22,7 +22,6 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@types/pixi.js": "^5.0.0",
     "pixi.js": "^6.4.2"
   }
 }
