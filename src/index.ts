@@ -23,7 +23,7 @@ if (process.env.NODE_ENV !== "production") {
 
 document.body.appendChild(app.view);
 
-export const game = new Game(app, isDevBuild);
+export const game = new Game(app, { width: app.screen.width, height: app.screen.height }, isDevBuild);
 app.ticker.add((dt) => game.update(dt));
 
 preload()

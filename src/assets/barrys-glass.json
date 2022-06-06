@@ -64,6 +64,13 @@
   "size": { "w": 896, "h": 128 },
   "scale": "1",
   "frameTags": [
+   { "name": "hand", "from": 0, "to": 0, "direction": "forward" },
+   { "name": "mixer-lower", "from": 1, "to": 1, "direction": "forward" },
+   { "name": "mixer-upper", "from": 2, "to": 2, "direction": "forward" },
+   { "name": "glass-outline", "from": 3, "to": 3, "direction": "forward" },
+   { "name": "glass-fill-lower", "from": 4, "to": 4, "direction": "forward" },
+   { "name": "glass-fill-upper", "from": 5, "to": 5, "direction": "forward" },
+   { "name": "glass-liquid", "from": 6, "to": 6, "direction": "forward" }
   ],
   "layers": [
    { "name": "Layer 1", "opacity": 255, "blendMode": "normal" }

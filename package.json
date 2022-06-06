@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@pixi/sound": "^4.2.0",
+    "pixi-viewport": "^4.34.4",
     "pixi.js": "^6.4.2"
   }
 }
