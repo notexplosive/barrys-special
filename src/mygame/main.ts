@@ -2,6 +2,7 @@ import { game } from "../index";
 import { Container, Point, Sprite } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
+import { Updater } from "../limbo/data/updater";
 
 
 export function main() {
@@ -26,14 +27,14 @@ export function main() {
     game.world.addChild(hand)
     game.world.setZoom(1.5, true)
 
-    let isDoneDropping = animate_dropIngredients(hand, mixer)
+    let isDoneDropping = animate_dropIngredients(hand, mixer, Assets.spritesheet("ingredients").textures[0])
 
 
     let buttonParent = new Container();
     buttonParent.y = 464
     game.rootContainer.addChild(buttonParent)
 
-    addButtonToRow(buttonParent, () => { animate_dropIngredients(hand, mixer) })
+    addButtonToRow(buttonParent, () => { animate_dropIngredients(hand, mixer, Assets.spritesheet("ingredients").textures[0]) })
     addButtonToRow(buttonParent, () => { })
     addButtonToRow(buttonParent, () => { })
     addButtonToRow(buttonParent, () => { })
@@ -45,7 +46,11 @@ function addButtonToRow(buttonParent: Container, onClicked: Function) {
     const buttonCount = buttonParent.children.length
     const padding = 10
 
-    let buttonBackgroundSprite = new Sprite(Assets.spritesheet("buttons").textures[0])
+    const idleButtonTexture = Assets.spritesheet("buttons").textures[0];
+    const hoverButtonTexture = Assets.spritesheet("buttons").textures[1];
+    const pressedButtonTexture = Assets.spritesheet("buttons").textures[2];
+
+    let buttonBackgroundSprite = new Sprite(idleButtonTexture)
     let buttonImageSprite = new Sprite(Assets.spritesheet("ingredients").textures[0])
     buttonBackgroundSprite.addChild(buttonImageSprite)
     buttonParent.addChild(buttonBackgroundSprite)
@@ -78,6 +83,21 @@ function addButtonToRow(buttonParent: Container, onClicked: Function) {
     function onButtonUpOutside() {
         buttonState.isEngaged = false
     }
+
+    game.updaters.push(new Updater(() => {
+        buttonImageSprite.y = 0
+        buttonBackgroundSprite.texture = idleButtonTexture
+
+        if (buttonState.isHovered) {
+            buttonBackgroundSprite.texture = hoverButtonTexture
+            buttonImageSprite.y = 2
+        }
+
+        if (buttonState.isEngaged) {
+            buttonBackgroundSprite.texture = pressedButtonTexture
+            buttonImageSprite.y = 5
+        }
+    }))
 
     buttonBackgroundSprite.on("pointerdown", onButtonDown)
     buttonBackgroundSprite.on("pointerup", onButtonUp)

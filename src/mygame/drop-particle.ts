@@ -1,9 +1,9 @@
-import { Container, Sprite } from "pixi.js";
+import { Container, Sprite, Texture } from "pixi.js";
 import { game } from "..";
 import { Assets } from "../limbo/core/assets";
 
-export function createDropParticle(hand: Container, mixer: Container, delay: number) {
-    let droppingContainer = new Sprite(Assets.spritesheet("ingredients").textures[0]);
+export function createDropParticle(hand: Container, mixer: Container, texture: Texture, delay: number) {
+    let droppingContainer = new Sprite(texture);
     droppingContainer.x = hand.x + (Math.random() - 0.5) * 40
     droppingContainer.y = hand.y + (Math.random() - 0.5) * 10
     droppingContainer.anchor.set(0.5, 0.5)
@@ -48,5 +48,9 @@ export class DropParticle {
         if (this.sprite.y > this.mixerY) {
             this.isDone = true
         }
+    }
+
+    destroy() {
+        this.sprite.destroy()
     }
 }
