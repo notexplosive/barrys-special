@@ -7,6 +7,11 @@ import { Ingredient } from './data/ingredient';
 
 export let prop_hand: Sprite;
 export let prop_mixer: Sprite;
+export let updateables: IUpdateable[] = [];
+
+export interface IUpdateable {
+    update(dt: number): void;
+}
 
 export function main() {
     game.setupKey("ArrowUp")
@@ -33,87 +38,93 @@ export function main() {
     let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 
 
-    let buttonParent = new ButtonRow();
-    buttonParent.y = 464
-    game.rootContainer.addChild(buttonParent)
+    let buttonRow = new ButtonRow();
+    buttonRow.y = 464
+    game.rootContainer.addChild(buttonRow)
 
-    buttonParent.addIngredientButton(Ingredient.All[0])
-    buttonParent.addIngredientButton(Ingredient.All[1])
-    buttonParent.addIngredientButton(Ingredient.All[2])
-    buttonParent.addIngredientButton(Ingredient.All[3])
-    buttonParent.addIngredientButton(Ingredient.All[4])
+    for (let ingredient of Ingredient.All) {
+        buttonRow.addIngredientButton(ingredient)
+    }
 
+    game.updaters.push(new Updater((dt) => {
+        let snapshot = updateables.concat([])
+        for (let updatable of snapshot) {
+            updatable.update(dt)
+        }
+    }))
 }
 
-export class Button extends Container {
+export class Button extends Container implements IUpdateable {
     protected readonly idleButtonTexture: Texture;
     protected readonly hoverButtonTexture: Texture;
     protected readonly pressedButtonTexture: Texture;
+    protected readonly buttonImageSprite: Sprite;
+    protected readonly buttonBackgroundSprite: Sprite;
+    protected readonly buttonState = { isEngaged: false, isHovered: false }
+
 
     constructor(parentRow: Container, idleButtonTexture: Texture, hoverButtonTexture: Texture, pressedButtonTexture: Texture, buttonImageTexture: Texture, onClicked: Function) {
         super()
+        updateables.push(this)
         this.idleButtonTexture = idleButtonTexture
         this.hoverButtonTexture = hoverButtonTexture
         this.pressedButtonTexture = pressedButtonTexture
 
-        const buttonCount = parentRow.children.length
-        parentRow.addChild(this)
-        this.x = buttonCount * (ButtonRow.buttonWidth + ButtonRow.padding);
+        this.buttonBackgroundSprite = new Sprite(this.idleButtonTexture)
+        this.buttonImageSprite = new Sprite(buttonImageTexture);
+        this.buttonBackgroundSprite.addChild(this.buttonImageSprite)
+        this.addChild(this.buttonBackgroundSprite);
 
-        let buttonBackgroundSprite = new Sprite(this.idleButtonTexture)
-        let buttonImageSprite = new Sprite(buttonImageTexture);
-        buttonBackgroundSprite.addChild(buttonImageSprite)
-        this.addChild(buttonBackgroundSprite);
+        this.buttonBackgroundSprite.interactive = true;
+        this.buttonBackgroundSprite.buttonMode = true;
 
-        buttonBackgroundSprite.interactive = true;
-        buttonBackgroundSprite.buttonMode = true;
-
-        let buttonState = { isEngaged: false, isHovered: false }
+        // javascript capture semantics are terrible
+        let me = this
 
         function onButtonDown() {
-            buttonState.isEngaged = true
+            me.buttonState.isEngaged = true
         }
 
         function onButtonUp() {
-            if (buttonState.isEngaged) {
+            if (me.buttonState.isEngaged) {
                 onClicked()
             }
 
-            buttonState.isEngaged = false
+            me.buttonState.isEngaged = false
         }
 
         function onButtonHover() {
-            buttonState.isHovered = true
+            me.buttonState.isHovered = true
         }
 
         function onButtonUnhover() {
-            buttonState.isHovered = false
+            me.buttonState.isHovered = false
         }
 
         function onButtonUpOutside() {
-            buttonState.isEngaged = false
+            me.buttonState.isEngaged = false
         }
 
-        game.updaters.push(new Updater(() => {
-            buttonImageSprite.y = 0
-            buttonBackgroundSprite.texture = this.idleButtonTexture
+        this.buttonBackgroundSprite.on("pointerdown", onButtonDown)
+        this.buttonBackgroundSprite.on("pointerup", onButtonUp)
+        this.buttonBackgroundSprite.on("pointerover", onButtonHover)
+        this.buttonBackgroundSprite.on("pointerout", onButtonUnhover)
+        this.buttonBackgroundSprite.on("pointerupoutside", onButtonUpOutside)
+    }
 
-            if (buttonState.isHovered) {
-                buttonBackgroundSprite.texture = this.hoverButtonTexture
-                buttonImageSprite.y = 2
-            }
+    update(dt: number): void {
+        this.buttonImageSprite.y = 0
+        this.buttonBackgroundSprite.texture = this.idleButtonTexture
 
-            if (buttonState.isEngaged) {
-                buttonBackgroundSprite.texture = this.pressedButtonTexture
-                buttonImageSprite.y = 5
-            }
-        }))
+        if (this.buttonState.isHovered) {
+            this.buttonBackgroundSprite.texture = this.hoverButtonTexture
+            this.buttonImageSprite.y = 2
+        }
 
-        buttonBackgroundSprite.on("pointerdown", onButtonDown)
-        buttonBackgroundSprite.on("pointerup", onButtonUp)
-        buttonBackgroundSprite.on("pointerover", onButtonHover)
-        buttonBackgroundSprite.on("pointerout", onButtonUnhover)
-        buttonBackgroundSprite.on("pointerupoutside", onButtonUpOutside)
+        if (this.buttonState.isEngaged) {
+            this.buttonBackgroundSprite.texture = this.pressedButtonTexture
+            this.buttonImageSprite.y = 5
+        }
     }
 }
 
@@ -130,12 +141,88 @@ export class IngredientButton extends Button {
     }
 }
 
+export class PageButton extends Button {
+    constructor(parentRow: ButtonRow, pageDelta: number) {
+        super(
+            parentRow,
+            Assets.spritesheet("buttons").textures[3],
+            Assets.spritesheet("buttons").textures[4],
+            Assets.spritesheet("buttons").textures[5],
+            Assets.spritesheet("buttons").textures["empty"], // <- bad code, we need an empty texture here
+            () => { parentRow.movePage(pageDelta) }
+        )
+
+        if (pageDelta < 0) {
+            this.buttonBackgroundSprite.anchor.x = 1
+            this.buttonBackgroundSprite.scale.x = -1;
+        }
+    }
+}
+
 export class ButtonRow extends Container {
     static readonly buttonWidth = 128;
     static readonly padding = 10
+    private currentPage: number;
+    private readonly allIngredientButtons: IngredientButton[] = [];
+    private readonly pageLength = 4
+    private readonly pageLeftButton: PageButton;
+    private readonly pageRightButton: PageButton;
+    private readonly leftSpacer: Container = new Container();
+    private readonly rightSpacer: Container = new Container();
+
+    constructor() {
+        super()
+        this.pageLeftButton = new PageButton(this, -1);
+        this.pageRightButton = new PageButton(this, 1);
+    }
+
+    solveLayout() {
+        this.removeChildren(0, this.children.length)
+
+        let lastIndexOfArray = this.allIngredientButtons.length - 1
+        let isFirstPage = this.currentPage == 0
+        let startIndex = this.currentPage * this.pageLength
+        let endIndex = startIndex + this.pageLength
+
+        let isLastPage = false
+        if (endIndex >= lastIndexOfArray) {
+            endIndex = lastIndexOfArray
+            isLastPage = true
+        }
+
+        if (!isFirstPage) {
+            this.addChild(this.pageLeftButton)
+        } else {
+            this.addChild(this.leftSpacer);
+        }
+
+        for (let i = startIndex; i < endIndex; i++) {
+            this.addChild(this.allIngredientButtons[i])
+        }
+
+        if (!isLastPage) {
+            this.addChild(this.pageRightButton)
+        } else {
+            this.addChild(this.rightSpacer)
+        }
+
+        for (let i = 0; i < this.children.length; i++) {
+            this.getChildAt(i).x = i * (ButtonRow.buttonWidth + ButtonRow.padding);
+        }
+    }
 
     addIngredientButton(ingredient: Ingredient) {
         let button = new IngredientButton(this, ingredient);
+        this.allIngredientButtons.push(button);
+        this.addChild(button)
+
+        this.currentPage = 0;
+        this.solveLayout()
     }
 
+    movePage(pageDelta: number) {
+        this.currentPage += pageDelta;
+
+        this.solveLayout()
+    }
 }
