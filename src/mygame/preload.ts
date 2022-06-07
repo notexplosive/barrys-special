@@ -4,6 +4,6 @@ import { gridBasedSpriteSheetData } from '../limbo/data/grid-based-sprite-sheet-
 export function preload() {
     prepareLoad(AssetLoader.Texture, "background", "background.png")
     prepareLoad(AssetLoader.Sound, "ouch", "ouch.ogg")
-    prepareLoad(AssetLoader.Spritesheet, "ingredients", "barrys-ingredients.json")
+    prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "ingredients", "barrys-ingredients.png")
     prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "glass", "barrys-glass.png")
 }
