@@ -31,80 +31,87 @@ export function main() {
     let isDoneDropping = animate_dropIngredients(hand, mixer, Ingredient.All[0])
 
 
-    let buttonParent = new Container();
+    let buttonParent = new ButtonRow();
     buttonParent.y = 464
     game.rootContainer.addChild(buttonParent)
 
-    addButtonToRow(buttonParent, () => { animate_dropIngredients(hand, mixer, Ingredient.All[0]) })
-    addButtonToRow(buttonParent, () => { })
-    addButtonToRow(buttonParent, () => { })
-    addButtonToRow(buttonParent, () => { })
-    addButtonToRow(buttonParent, () => { })
+    buttonParent.addButton(() => { animate_dropIngredients(hand, mixer, Ingredient.All[0]) })
+    buttonParent.addButton(() => { })
+    buttonParent.addButton(() => { })
+    buttonParent.addButton(() => { })
+    buttonParent.addButton(() => { })
 }
 
-function addButtonToRow(buttonParent: Container, onClicked: Function) {
-    const buttonWidth = 128;
-    const buttonCount = buttonParent.children.length
-    const padding = 10
+export class Button {
 
-    const idleButtonTexture = Assets.spritesheet("buttons").textures[0];
-    const hoverButtonTexture = Assets.spritesheet("buttons").textures[1];
-    const pressedButtonTexture = Assets.spritesheet("buttons").textures[2];
+}
 
-    let buttonBackgroundSprite = new Sprite(idleButtonTexture)
-    let buttonImageSprite = new Sprite(Assets.spritesheet("ingredients").textures[0])
-    buttonBackgroundSprite.addChild(buttonImageSprite)
-    buttonParent.addChild(buttonBackgroundSprite)
+export class ButtonRow extends Container {
+    addButton(onClicked: Function) {
+        const buttonWidth = 128;
+        const buttonCount = this.children.length
+        const padding = 10
 
-    buttonBackgroundSprite.interactive = true;
-    buttonBackgroundSprite.buttonMode = true;
+        const idleButtonTexture = Assets.spritesheet("buttons").textures[0];
+        const hoverButtonTexture = Assets.spritesheet("buttons").textures[1];
+        const pressedButtonTexture = Assets.spritesheet("buttons").textures[2];
 
-    let buttonState = { isEngaged: false, isHovered: false }
+        let buttonBackgroundSprite = new Sprite(idleButtonTexture)
+        let buttonImageSprite = new Sprite(Assets.spritesheet("ingredients").textures[0])
+        buttonBackgroundSprite.addChild(buttonImageSprite)
+        this.addChild(buttonBackgroundSprite)
 
-    function onButtonDown() {
-        buttonState.isEngaged = true
-    }
+        buttonBackgroundSprite.interactive = true;
+        buttonBackgroundSprite.buttonMode = true;
 
-    function onButtonUp() {
-        if (buttonState.isEngaged) {
-            onClicked()
+        let buttonState = { isEngaged: false, isHovered: false }
+
+        function onButtonDown() {
+            buttonState.isEngaged = true
         }
 
-        buttonState.isEngaged = false
-    }
+        function onButtonUp() {
+            if (buttonState.isEngaged) {
+                onClicked()
+            }
 
-    function onButtonHover() {
-        buttonState.isHovered = true
-    }
-
-    function onButtonUnhover() {
-        buttonState.isHovered = false
-    }
-
-    function onButtonUpOutside() {
-        buttonState.isEngaged = false
-    }
-
-    game.updaters.push(new Updater(() => {
-        buttonImageSprite.y = 0
-        buttonBackgroundSprite.texture = idleButtonTexture
-
-        if (buttonState.isHovered) {
-            buttonBackgroundSprite.texture = hoverButtonTexture
-            buttonImageSprite.y = 2
+            buttonState.isEngaged = false
         }
 
-        if (buttonState.isEngaged) {
-            buttonBackgroundSprite.texture = pressedButtonTexture
-            buttonImageSprite.y = 5
+        function onButtonHover() {
+            buttonState.isHovered = true
         }
-    }))
 
-    buttonBackgroundSprite.on("pointerdown", onButtonDown)
-    buttonBackgroundSprite.on("pointerup", onButtonUp)
-    buttonBackgroundSprite.on("pointerover", onButtonHover)
-    buttonBackgroundSprite.on("pointerout", onButtonUnhover)
-    buttonBackgroundSprite.on("pointerupoutside", onButtonUpOutside)
+        function onButtonUnhover() {
+            buttonState.isHovered = false
+        }
 
-    buttonBackgroundSprite.x = buttonCount * (buttonWidth + padding);
+        function onButtonUpOutside() {
+            buttonState.isEngaged = false
+        }
+
+        game.updaters.push(new Updater(() => {
+            buttonImageSprite.y = 0
+            buttonBackgroundSprite.texture = idleButtonTexture
+
+            if (buttonState.isHovered) {
+                buttonBackgroundSprite.texture = hoverButtonTexture
+                buttonImageSprite.y = 2
+            }
+
+            if (buttonState.isEngaged) {
+                buttonBackgroundSprite.texture = pressedButtonTexture
+                buttonImageSprite.y = 5
+            }
+        }))
+
+        buttonBackgroundSprite.on("pointerdown", onButtonDown)
+        buttonBackgroundSprite.on("pointerup", onButtonUp)
+        buttonBackgroundSprite.on("pointerover", onButtonHover)
+        buttonBackgroundSprite.on("pointerout", onButtonUnhover)
+        buttonBackgroundSprite.on("pointerupoutside", onButtonUpOutside)
+
+        buttonBackgroundSprite.x = buttonCount * (buttonWidth + padding);
+    }
+
 }
