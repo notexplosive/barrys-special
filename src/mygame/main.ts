@@ -3,6 +3,7 @@ import { Container, Point, Sprite } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
 import { Updater } from "../limbo/data/updater";
+import { Ingredient } from "./data/ingredient";
 
 
 export function main() {
@@ -27,14 +28,14 @@ export function main() {
     game.world.addChild(hand)
     game.world.setZoom(1.5, true)
 
-    let isDoneDropping = animate_dropIngredients(hand, mixer, Assets.spritesheet("ingredients").textures[0])
+    let isDoneDropping = animate_dropIngredients(hand, mixer, Ingredient.All[0])
 
 
     let buttonParent = new Container();
     buttonParent.y = 464
     game.rootContainer.addChild(buttonParent)
 
-    addButtonToRow(buttonParent, () => { animate_dropIngredients(hand, mixer, Assets.spritesheet("ingredients").textures[0]) })
+    addButtonToRow(buttonParent, () => { animate_dropIngredients(hand, mixer, Ingredient.All[0]) })
     addButtonToRow(buttonParent, () => { })
     addButtonToRow(buttonParent, () => { })
     addButtonToRow(buttonParent, () => { })

@@ -1,22 +1,23 @@
 import { Sprite, Texture } from "pixi.js";
 import { game } from "..";
 import { Updater } from "../limbo/data/updater";
+import { Ingredient } from "./data/ingredient";
 import { createDropParticle } from "./drop-particle";
 
 export type IsDoneFunction = () => boolean
 
-export function animate_dropIngredients(hand: Sprite, mixer: Sprite, texture: Texture): IsDoneFunction {
+export function animate_dropIngredients(hand: Sprite, mixer: Sprite, ingredient: Ingredient): IsDoneFunction {
     let droppingUpdater = new Updater();
 
     let particles = [
-        createDropParticle(hand, mixer, texture, 0),
-        createDropParticle(hand, mixer, texture, 1),
-        createDropParticle(hand, mixer, texture, 2),
-        createDropParticle(hand, mixer, texture, 3),
-        createDropParticle(hand, mixer, texture, 4),
-        createDropParticle(hand, mixer, texture, 5),
-        createDropParticle(hand, mixer, texture, 6),
-        createDropParticle(hand, mixer, texture, 7),
+        createDropParticle(hand, mixer, ingredient, 0),
+        createDropParticle(hand, mixer, ingredient, 1),
+        createDropParticle(hand, mixer, ingredient, 2),
+        createDropParticle(hand, mixer, ingredient, 3),
+        createDropParticle(hand, mixer, ingredient, 4),
+        createDropParticle(hand, mixer, ingredient, 5),
+        createDropParticle(hand, mixer, ingredient, 6),
+        createDropParticle(hand, mixer, ingredient, 7),
     ]
 
     droppingUpdater.add((dt) => {

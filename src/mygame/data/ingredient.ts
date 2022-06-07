@@ -1,7 +1,7 @@
 import { Texture } from "pixi.js";
 import { Assets } from '../../limbo/core/assets';
 
-class Ingredient {
+export class Ingredient {
     readonly name: string;
     readonly index: number;
 
