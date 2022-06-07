@@ -1,5 +1,5 @@
 import { game } from "../index";
-import { Container, Point, Sprite } from "pixi.js";
+import { Container, Point, Sprite, Texture } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
 import { Updater } from "../limbo/data/updater";
@@ -35,31 +35,30 @@ export function main() {
     buttonParent.y = 464
     game.rootContainer.addChild(buttonParent)
 
-    buttonParent.addButton(() => { animate_dropIngredients(hand, mixer, Ingredient.All[0]) })
-    buttonParent.addButton(() => { })
-    buttonParent.addButton(() => { })
-    buttonParent.addButton(() => { })
-    buttonParent.addButton(() => { })
+    buttonParent.addIngredientButton(() => { animate_dropIngredients(hand, mixer, Ingredient.All[0]) })
+    buttonParent.addIngredientButton(() => { })
+    buttonParent.addIngredientButton(() => { })
+    buttonParent.addIngredientButton(() => { })
+    buttonParent.addIngredientButton(() => { })
 }
 
-export class Button {
+export class Button extends Container {
+    readonly idleButtonTexture: Texture;
+    readonly hoverButtonTexture: Texture;
+    readonly pressedButtonTexture: Texture;
 
-}
+    constructor(parentRow: Container, onClicked: Function) {
+        super()
+        const buttonCount = parentRow.children.length
+        parentRow.addChild(this)
+        this.idleButtonTexture = Assets.spritesheet("buttons").textures[0];
+        this.hoverButtonTexture = Assets.spritesheet("buttons").textures[1];
+        this.pressedButtonTexture = Assets.spritesheet("buttons").textures[2];
 
-export class ButtonRow extends Container {
-    addButton(onClicked: Function) {
-        const buttonWidth = 128;
-        const buttonCount = this.children.length
-        const padding = 10
-
-        const idleButtonTexture = Assets.spritesheet("buttons").textures[0];
-        const hoverButtonTexture = Assets.spritesheet("buttons").textures[1];
-        const pressedButtonTexture = Assets.spritesheet("buttons").textures[2];
-
-        let buttonBackgroundSprite = new Sprite(idleButtonTexture)
+        let buttonBackgroundSprite = new Sprite(this.idleButtonTexture)
         let buttonImageSprite = new Sprite(Assets.spritesheet("ingredients").textures[0])
         buttonBackgroundSprite.addChild(buttonImageSprite)
-        this.addChild(buttonBackgroundSprite)
+        this.addChild(buttonBackgroundSprite);
 
         buttonBackgroundSprite.interactive = true;
         buttonBackgroundSprite.buttonMode = true;
@@ -92,15 +91,15 @@ export class ButtonRow extends Container {
 
         game.updaters.push(new Updater(() => {
             buttonImageSprite.y = 0
-            buttonBackgroundSprite.texture = idleButtonTexture
+            buttonBackgroundSprite.texture = this.idleButtonTexture
 
             if (buttonState.isHovered) {
-                buttonBackgroundSprite.texture = hoverButtonTexture
+                buttonBackgroundSprite.texture = this.hoverButtonTexture
                 buttonImageSprite.y = 2
             }
 
             if (buttonState.isEngaged) {
-                buttonBackgroundSprite.texture = pressedButtonTexture
+                buttonBackgroundSprite.texture = this.pressedButtonTexture
                 buttonImageSprite.y = 5
             }
         }))
@@ -111,7 +110,15 @@ export class ButtonRow extends Container {
         buttonBackgroundSprite.on("pointerout", onButtonUnhover)
         buttonBackgroundSprite.on("pointerupoutside", onButtonUpOutside)
 
-        buttonBackgroundSprite.x = buttonCount * (buttonWidth + padding);
+        buttonBackgroundSprite.x = buttonCount * (ButtonRow.buttonWidth + ButtonRow.padding);
+    }
+}
+
+export class ButtonRow extends Container {
+    static readonly buttonWidth = 128;
+    static readonly padding = 10
+    addIngredientButton(onClicked: Function) {
+        let button = new Button(this, onClicked);
     }
 
 }
