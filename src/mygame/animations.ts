@@ -3,21 +3,22 @@ import { game } from "..";
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
 import { createDropParticle } from "./drop-particle";
+import { prop_hand, prop_mixer } from "./main";
 
 export type IsDoneFunction = () => boolean
 
-export function animate_dropIngredients(hand: Sprite, mixer: Sprite, ingredient: Ingredient): IsDoneFunction {
+export function animate_dropIngredients(ingredient: Ingredient): IsDoneFunction {
     let droppingUpdater = new Updater();
 
     let particles = [
-        createDropParticle(hand, mixer, ingredient, 0),
-        createDropParticle(hand, mixer, ingredient, 1),
-        createDropParticle(hand, mixer, ingredient, 2),
-        createDropParticle(hand, mixer, ingredient, 3),
-        createDropParticle(hand, mixer, ingredient, 4),
-        createDropParticle(hand, mixer, ingredient, 5),
-        createDropParticle(hand, mixer, ingredient, 6),
-        createDropParticle(hand, mixer, ingredient, 7),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 0),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 1),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 2),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 3),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 4),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 5),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 6),
+        createDropParticle(prop_hand, prop_mixer, ingredient, 7),
     ]
 
     droppingUpdater.add((dt) => {

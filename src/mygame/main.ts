@@ -3,8 +3,10 @@ import { Container, Point, Sprite, Texture } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
 import { Updater } from "../limbo/data/updater";
-import { Ingredient } from "./data/ingredient";
+import { Ingredient } from './data/ingredient';
 
+export let prop_hand: Sprite;
+export let prop_mixer: Sprite;
 
 export function main() {
     game.setupKey("ArrowUp")
@@ -15,31 +17,32 @@ export function main() {
 
     let origin = new Point(game.world.screenWidth / 2, game.world.screenHeight / 2)
 
-    let mixer = new Sprite(Assets.spritesheet("glass").textures[1]);
-    mixer.x = origin.x
-    mixer.y = origin.y + 10
-    mixer.anchor.set(0.5, 0.5)
-    game.world.addChild(mixer)
+    prop_mixer = new Sprite(Assets.spritesheet("glass").textures[1]);
+    prop_mixer.x = origin.x
+    prop_mixer.y = origin.y + 10
+    prop_mixer.anchor.set(0.5, 0.5)
+    game.world.addChild(prop_mixer)
 
-    let hand = new Sprite(Assets.spritesheet("glass").textures[0]);
-    hand.x = origin.x;
-    hand.y = 160
-    hand.anchor.set(0.5, 0.5)
-    game.world.addChild(hand)
+    prop_hand = new Sprite(Assets.spritesheet("glass").textures[0]);
+    prop_hand.x = origin.x;
+    prop_hand.y = 160
+    prop_hand.anchor.set(0.5, 0.5)
+    game.world.addChild(prop_hand)
     game.world.setZoom(1.5, true)
 
-    let isDoneDropping = animate_dropIngredients(hand, mixer, Ingredient.All[0])
+    let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 
 
     let buttonParent = new ButtonRow();
     buttonParent.y = 464
     game.rootContainer.addChild(buttonParent)
 
-    buttonParent.addIngredientButton(() => { animate_dropIngredients(hand, mixer, Ingredient.All[0]) })
-    buttonParent.addIngredientButton(() => { })
-    buttonParent.addIngredientButton(() => { })
-    buttonParent.addIngredientButton(() => { })
-    buttonParent.addIngredientButton(() => { })
+    buttonParent.addIngredientButton(Ingredient.All[0])
+    buttonParent.addIngredientButton(Ingredient.All[1])
+    buttonParent.addIngredientButton(Ingredient.All[2])
+    buttonParent.addIngredientButton(Ingredient.All[3])
+    buttonParent.addIngredientButton(Ingredient.All[4])
+
 }
 
 export class Button extends Container {
@@ -115,14 +118,14 @@ export class Button extends Container {
 }
 
 export class IngredientButton extends Button {
-    constructor(parentRow: Container, onClicked: Function) {
+    constructor(parentRow: Container, ingredient: Ingredient) {
         super(
             parentRow,
             Assets.spritesheet("buttons").textures[0],
             Assets.spritesheet("buttons").textures[1],
             Assets.spritesheet("buttons").textures[2],
-            Assets.spritesheet("ingredients").textures[0],
-            onClicked
+            ingredient.texture(),
+            () => { animate_dropIngredients(ingredient) }
         )
     }
 }
@@ -130,8 +133,9 @@ export class IngredientButton extends Button {
 export class ButtonRow extends Container {
     static readonly buttonWidth = 128;
     static readonly padding = 10
-    addIngredientButton(onClicked: Function) {
-        let button = new IngredientButton(this, onClicked);
+
+    addIngredientButton(ingredient: Ingredient) {
+        let button = new IngredientButton(this, ingredient);
     }
 
 }
