@@ -43,20 +43,22 @@ export function main() {
 }
 
 export class Button extends Container {
-    readonly idleButtonTexture: Texture;
-    readonly hoverButtonTexture: Texture;
-    readonly pressedButtonTexture: Texture;
+    protected readonly idleButtonTexture: Texture;
+    protected readonly hoverButtonTexture: Texture;
+    protected readonly pressedButtonTexture: Texture;
 
-    constructor(parentRow: Container, onClicked: Function) {
+    constructor(parentRow: Container, idleButtonTexture: Texture, hoverButtonTexture: Texture, pressedButtonTexture: Texture, buttonImageTexture: Texture, onClicked: Function) {
         super()
+        this.idleButtonTexture = idleButtonTexture
+        this.hoverButtonTexture = hoverButtonTexture
+        this.pressedButtonTexture = pressedButtonTexture
+
         const buttonCount = parentRow.children.length
         parentRow.addChild(this)
-        this.idleButtonTexture = Assets.spritesheet("buttons").textures[0];
-        this.hoverButtonTexture = Assets.spritesheet("buttons").textures[1];
-        this.pressedButtonTexture = Assets.spritesheet("buttons").textures[2];
+        this.x = buttonCount * (ButtonRow.buttonWidth + ButtonRow.padding);
 
         let buttonBackgroundSprite = new Sprite(this.idleButtonTexture)
-        let buttonImageSprite = new Sprite(Assets.spritesheet("ingredients").textures[0])
+        let buttonImageSprite = new Sprite(buttonImageTexture);
         buttonBackgroundSprite.addChild(buttonImageSprite)
         this.addChild(buttonBackgroundSprite);
 
@@ -109,8 +111,19 @@ export class Button extends Container {
         buttonBackgroundSprite.on("pointerover", onButtonHover)
         buttonBackgroundSprite.on("pointerout", onButtonUnhover)
         buttonBackgroundSprite.on("pointerupoutside", onButtonUpOutside)
+    }
+}
 
-        buttonBackgroundSprite.x = buttonCount * (ButtonRow.buttonWidth + ButtonRow.padding);
+export class IngredientButton extends Button {
+    constructor(parentRow: Container, onClicked: Function) {
+        super(
+            parentRow,
+            Assets.spritesheet("buttons").textures[0],
+            Assets.spritesheet("buttons").textures[1],
+            Assets.spritesheet("buttons").textures[2],
+            Assets.spritesheet("ingredients").textures[0],
+            onClicked
+        )
     }
 }
 
@@ -118,7 +131,7 @@ export class ButtonRow extends Container {
     static readonly buttonWidth = 128;
     static readonly padding = 10
     addIngredientButton(onClicked: Function) {
-        let button = new Button(this, onClicked);
+        let button = new IngredientButton(this, onClicked);
     }
 
 }
