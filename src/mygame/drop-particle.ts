@@ -28,7 +28,7 @@ export class DropParticle {
         this.handY = handY;
         this.mixerY = mixerY;
         this.delay = delay * 2
-        this.velocity = 0;
+        this.velocity = 5;
         this.isDone = false
     }
 
