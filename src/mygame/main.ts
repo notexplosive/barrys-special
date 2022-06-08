@@ -1,11 +1,12 @@
 import { game } from "../index";
-import { Container, Point, Sprite, Texture, Text, TextStyle } from "pixi.js";
+import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { ButtonRow } from "./ui/button";
 import { Tooltip } from "./ui/tooltip";
+import { PrimitiveRenderer } from '../limbo/render/primitive';
 
 export let prop_hand: Sprite;
 export let prop_mixer: Sprite;
@@ -41,6 +42,12 @@ export function main() {
 
     let mainGameUi = game.rootContainer.addChild(new Container())
 
+    const mixture = new Mixture()
+    const mixtureStatus = new MixtureStatus(mixture)
+    mixtureStatus.x = origin.x
+    mixtureStatus.y = origin.y + 60
+    mainGameUi.addChild(mixtureStatus);
+
     const tooltip = new Tooltip()
     tooltip.position.set(origin.x, origin.y + 120)
     mainGameUi.addChild(tooltip);
@@ -59,4 +66,50 @@ export function main() {
             updatable.update(dt)
         }
     }))
+}
+
+export class Mixture {
+    ingredients(): Ingredient[] {
+        return [Ingredient.All[5], Ingredient.All[1], Ingredient.All[3]]
+    }
+}
+
+export class MixtureStatus extends Container {
+    public readonly mixture: Mixture;
+    slots: Sprite[];
+
+    constructor(mixture: Mixture) {
+        super();
+        this.mixture = mixture;
+        this.sortableChildren = true
+
+        function createSlot(): Sprite {
+            const result = new Sprite()
+            result.anchor.set(0.5)
+            result.scale.set(0.5)
+            result.zIndex += 10
+            return result
+        }
+
+        this.slots = [createSlot(), createSlot(), createSlot()]
+        this.addChild(this.slots[0])
+        this.addChild(this.slots[1])
+        this.addChild(this.slots[2])
+
+        const spacing = 64
+        this.slots[0].x = -spacing
+        this.slots[2].x = spacing
+
+        const renderer = new PrimitiveRenderer(this)
+        renderer.rectangle(true, new Rectangle(-spacing - 32, -32, 64 * 3, 64), { color: 0xffffff, alpha: 0.5 })
+
+        this.updateDisplay()
+    }
+
+    updateDisplay() {
+        let ingredients = this.mixture.ingredients()
+        for (let i = 0; i < ingredients.length; i++) {
+            this.slots[i].texture = ingredients[i].texture()
+        }
+    }
 }

@@ -103,7 +103,7 @@ export class PageButton extends Button {
             Assets.spritesheet("buttons").textures[3],
             Assets.spritesheet("buttons").textures[4],
             Assets.spritesheet("buttons").textures[5],
-            Assets.spritesheet("buttons").textures["empty"], // <- bad code, we need an empty texture here
+            null, // <- bad code, we need an empty texture here
             () => { parentRow.movePage(pageDelta) }
         )
 
