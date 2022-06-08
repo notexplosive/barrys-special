@@ -3,6 +3,7 @@ import { game } from "../..";
 import { Assets } from "../../limbo/core/assets";
 import { animate_dropIngredients } from "../animations";
 import { Ingredient } from "../data/ingredient";
+import { Mixture } from "../data/mixture";
 import { IUpdateable, updateables } from '../main';
 import { Tooltip } from "./tooltip";
 
@@ -82,14 +83,17 @@ export class Button extends Container implements IUpdateable {
 export class IngredientButton extends Button {
     readonly ingredient: Ingredient;
 
-    constructor(parentRow: Container, ingredient: Ingredient) {
+    constructor(parentRow: ButtonRow, ingredient: Ingredient) {
         super(
             parentRow,
             Assets.spritesheet("buttons").textures[0],
             Assets.spritesheet("buttons").textures[1],
             Assets.spritesheet("buttons").textures[2],
             ingredient.texture(),
-            () => { animate_dropIngredients(ingredient) }
+            () => {
+                parentRow.mixture.addIngredient(ingredient)
+                animate_dropIngredients(ingredient)
+            }
         )
 
         this.ingredient = ingredient;
@@ -125,9 +129,11 @@ export class ButtonRow extends Container implements IUpdateable {
     private readonly leftSpacer: Container = new Container();
     private readonly rightSpacer: Container = new Container();
     private readonly tooltip: Tooltip;
+    readonly mixture: Mixture;
 
-    constructor(tooltip: Tooltip) {
+    constructor(tooltip: Tooltip, mixture: Mixture) {
         super()
+        this.mixture = mixture;
         this.tooltip = tooltip;
         this.pageLeftButton = new PageButton(this, -1);
         this.pageRightButton = new PageButton(this, 1);
