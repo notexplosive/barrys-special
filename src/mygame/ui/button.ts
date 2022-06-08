@@ -15,7 +15,7 @@ export class Button extends Container implements IUpdateable {
     protected readonly buttonBackgroundSprite: Sprite;
     public readonly buttonState = { isEngaged: false, isHovered: false }
 
-    constructor(parentRow: Container, idleButtonTexture: Texture, hoverButtonTexture: Texture, pressedButtonTexture: Texture, buttonImageTexture: Texture, onClicked: Function) {
+    constructor(idleButtonTexture: Texture, hoverButtonTexture: Texture, pressedButtonTexture: Texture, buttonImageTexture: Texture, onClicked: Function) {
         super()
         updateables.push(this)
         this.idleButtonTexture = idleButtonTexture
@@ -83,9 +83,8 @@ export class Button extends Container implements IUpdateable {
 export class IngredientButton extends Button {
     readonly ingredient: Ingredient;
 
-    constructor(parentRow: ButtonRow, ingredient: Ingredient) {
+    constructor(parentRow: IngredientButtons, ingredient: Ingredient) {
         super(
-            parentRow,
             Assets.spritesheet("buttons").textures[0],
             Assets.spritesheet("buttons").textures[1],
             Assets.spritesheet("buttons").textures[2],
@@ -101,9 +100,8 @@ export class IngredientButton extends Button {
 }
 
 export class PageButton extends Button {
-    constructor(parentRow: ButtonRow, pageDelta: number) {
+    constructor(parentRow: IngredientButtons, pageDelta: number) {
         super(
-            parentRow,
             Assets.spritesheet("buttons").textures[3],
             Assets.spritesheet("buttons").textures[4],
             Assets.spritesheet("buttons").textures[5],
@@ -118,7 +116,7 @@ export class PageButton extends Button {
     }
 }
 
-export class ButtonRow extends Container implements IUpdateable {
+export class IngredientButtons extends Container implements IUpdateable {
     static readonly buttonWidth = 128;
     static readonly padding = 10
     private currentPage: number;
@@ -195,7 +193,7 @@ export class ButtonRow extends Container implements IUpdateable {
         }
 
         for (let i = 0; i < this.children.length; i++) {
-            this.getChildAt(i).x = i * (ButtonRow.buttonWidth + ButtonRow.padding);
+            this.getChildAt(i).x = i * (IngredientButtons.buttonWidth + IngredientButtons.padding);
         }
     }
 

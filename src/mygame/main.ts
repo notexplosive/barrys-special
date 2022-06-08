@@ -4,7 +4,7 @@ import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
-import { ButtonRow } from "./ui/button";
+import { IngredientButtons } from "./ui/button";
 import { Tooltip } from "./ui/tooltip";
 import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
@@ -52,16 +52,22 @@ export function main() {
 
     mixture.whenChanged(() => mixtureStatus.refresh())
 
+    mixture.whenChanged(() => {
+        if (mixture.isFilled()) {
+            ingredientButtons.visible = false
+        }
+    })
+
     const tooltip = new Tooltip()
     tooltip.position.set(origin.x, origin.y + 120)
     mainGameUi.addChild(tooltip);
 
-    let buttonRow = new ButtonRow(tooltip, mixture);
-    buttonRow.y = 464
-    mainGameUi.addChild(buttonRow)
+    let ingredientButtons = new IngredientButtons(tooltip, mixture);
+    ingredientButtons.y = 464
+    mainGameUi.addChild(ingredientButtons)
 
     for (let ingredient of Ingredient.All) {
-        buttonRow.addIngredientButton(ingredient)
+        ingredientButtons.addIngredientButton(ingredient)
     }
 
     game.updaters.push(new Updater((dt) => {

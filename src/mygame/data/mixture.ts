@@ -33,4 +33,8 @@ export class Mixture {
     whenChanged(callback: Function) {
         this.onChangedCallback.push(callback)
     }
+
+    isFilled(): boolean {
+        return this.currentIngredients.length == 3
+    }
 }
