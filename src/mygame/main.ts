@@ -11,7 +11,7 @@ import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
 
 export let prop_hand: Sprite;
-export let prop_mixer: Sprite;
+export let prop_mixer: Container;
 export let updateables: IUpdateable[] = [];
 
 export interface IUpdateable {
@@ -27,11 +27,22 @@ export function main() {
 
     let origin = new Point(game.world.screenWidth / 2, game.world.screenHeight / 2)
 
-    prop_mixer = new Sprite(Assets.spritesheet("glass").textures[1]);
+    prop_mixer = new Container()
     prop_mixer.x = origin.x
     prop_mixer.y = origin.y + 10
-    prop_mixer.anchor.set(0.5, 0.5)
+    prop_mixer.sortableChildren = true
     game.world.addChild(prop_mixer)
+
+
+    let mixerBackground = new Sprite(Assets.spritesheet("glass").textures[2])
+    mixerBackground.anchor.set(0.5, 0.5)
+    prop_mixer.addChild(mixerBackground)
+    mixerBackground.zIndex = -10
+
+    let mixerForeground = new Sprite(Assets.spritesheet("glass").textures[1]);
+    mixerForeground.anchor.set(0.5, 0.5)
+    mixerForeground.zIndex = 10
+    prop_mixer.addChild(mixerForeground)
 
     prop_hand = new Sprite(Assets.spritesheet("glass").textures[0]);
     prop_hand.x = origin.x;

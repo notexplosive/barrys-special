@@ -4,16 +4,17 @@ import { Assets } from "../limbo/core/assets";
 import { Ingredient } from './data/ingredient';
 
 export function createDropParticle(hand: Container, mixer: Container, ingredient: Ingredient, delay: number) {
-    let droppingContainer = new Sprite(ingredient.texture());
-    droppingContainer.x = hand.x + (Math.random() - 0.5) * 40
-    droppingContainer.y = hand.y + (Math.random() - 0.5) * 10
-    droppingContainer.anchor.set(0.5, 0.5)
-    droppingContainer.scale.set(0.25);
-    droppingContainer.zIndex -= 1
-    droppingContainer.rotation = Math.random() * Math.PI * 2
-    game.world.addChild(droppingContainer)
+    let particleContainer = new Sprite(ingredient.texture());
+    particleContainer.x = (hand.x - mixer.x) + (Math.random() - 0.5) * 40
+    particleContainer.y = (hand.y - mixer.y) + (Math.random() - 0.5) * 10
 
-    return new DropParticle(droppingContainer, hand.y, mixer.y, delay)
+    particleContainer.anchor.set(0.5, 0.5)
+    particleContainer.scale.set(0.25);
+    particleContainer.zIndex -= 1
+    particleContainer.rotation = Math.random() * Math.PI * 2
+    mixer.addChild(particleContainer)
+
+    return new DropParticle(particleContainer, hand.y, mixer.y, delay)
 }
 
 export class DropParticle {
@@ -46,7 +47,7 @@ export class DropParticle {
         this.velocity += dt / 10
         this.sprite.y += dt * this.velocity;
         this.sprite.rotation += dt / 10
-        if (this.sprite.y > this.mixerY) {
+        if (this.sprite.y > 0) {
             this.isDone = true
         }
     }
