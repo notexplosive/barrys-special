@@ -1,4 +1,5 @@
-import { Ingredient } from "./ingredient";
+import { Ingredient } from './ingredient';
+import { FlavorProfile, Flavor, mixFlavorProfiles } from './flavor';
 
 export class Mixture {
     private readonly currentIngredients: Ingredient[] = []
@@ -36,5 +37,15 @@ export class Mixture {
 
     isFilled(): boolean {
         return this.currentIngredients.length == 3
+    }
+
+    flavorProfile(): FlavorProfile {
+        let result = new FlavorProfile();
+
+        for (let ingredient of this.currentIngredients) {
+            result = mixFlavorProfiles(result, ingredient.flavorProfile)
+        }
+
+        return result
     }
 }

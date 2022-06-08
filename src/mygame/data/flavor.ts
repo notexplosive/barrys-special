@@ -5,16 +5,18 @@ export class Flavor {
         this.name = name
     }
 
-    static readonly Zesty = new Flavor("Zesty")
-    static readonly Crunchy = new Flavor("Crunchy")
+    static readonly Funny = new Flavor("Funny")
+    static readonly Crisp = new Flavor("Crisp")
     static readonly Wobbly = new Flavor("Wobbly")
-    static readonly Balmy = new Flavor("Balmy")
+    static readonly Moist = new Flavor("Moist")
+    static readonly Frosty = new Flavor("Frosty")
     static readonly Grouchy = new Flavor("Grouchy")
     static readonly Oily = new Flavor("Oily")
     static readonly Juicy = new Flavor("Juicy")
     static readonly Chemically = new Flavor("Chemically")
     static readonly Speedy = new Flavor("Speedy")
     static readonly Fruity = new Flavor("Fruity")
+    static readonly Gross = new Flavor("Gross")
 }
 
 type FlavorProfileData = Map<Flavor, number>
