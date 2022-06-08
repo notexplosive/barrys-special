@@ -1,7 +1,7 @@
 import { game } from "../index";
 import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
-import { animate_dropIngredients } from "./animations";
+import { animate_dropIngredients, IsDoneFunction, animate_mixAndServe } from './animations';
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { IngredientButtons, Button, IconButton } from './ui/button';
@@ -11,7 +11,7 @@ import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
 
 export let prop_hand: Sprite;
-export let prop_mixer: Container;
+export let prop_mixer: Mixer;
 export let updateables: IUpdateable[] = [];
 
 export interface IUpdateable {
@@ -27,22 +27,10 @@ export function main() {
 
     let origin = new Point(game.world.screenWidth / 2, game.world.screenHeight / 2)
 
-    prop_mixer = new Container()
+    prop_mixer = new Mixer()
     prop_mixer.x = origin.x
     prop_mixer.y = origin.y + 10
-    prop_mixer.sortableChildren = true
     game.world.addChild(prop_mixer)
-
-
-    let mixerBackground = new Sprite(Assets.spritesheet("glass").textures[2])
-    mixerBackground.anchor.set(0.5, 0.5)
-    prop_mixer.addChild(mixerBackground)
-    mixerBackground.zIndex = -10
-
-    let mixerForeground = new Sprite(Assets.spritesheet("glass").textures[1]);
-    mixerForeground.anchor.set(0.5, 0.5)
-    mixerForeground.zIndex = 10
-    prop_mixer.addChild(mixerForeground)
 
     prop_hand = new Sprite(Assets.spritesheet("glass").textures[0]);
     prop_hand.x = origin.x;
@@ -82,11 +70,12 @@ export function main() {
     function resetToNormal_state() {
         serveButtons.visible = false
         ingredientButtons.visible = true
+        prop_mixer.hideLid()
         mixture.clearIngredients()
     }
 
     const mixButton = new IconButton(Assets.spritesheet("icons").textures[0], () => {
-        // resetToNormal_state()
+        animate_mixAndServe()
     });
     serveButtons.addChild(mixButton)
 
@@ -101,6 +90,7 @@ export function main() {
         ingredientButtons.visible = false
         tooltip.setText("Ready!")
         serveButtons.visible = true
+        prop_mixer.putOnLid()
     }
 
     mixture.whenChanged(() => {
@@ -116,4 +106,54 @@ export function main() {
             updatable.update(dt)
         }
     }))
+}
+
+
+export class Mixer extends Container implements IUpdateable {
+    readonly lid: Sprite;
+
+    constructor() {
+        super()
+        this.sortableChildren = true
+
+        let mixerBackground = new Sprite(Assets.spritesheet("glass").textures[2])
+        mixerBackground.anchor.set(0.5, 0.5)
+        this.addChild(mixerBackground)
+        mixerBackground.zIndex = -10
+
+        let mixerForeground = new Sprite(Assets.spritesheet("glass").textures[1]);
+        mixerForeground.anchor.set(0.5, 0.5)
+        mixerForeground.zIndex = 10
+        this.addChild(mixerForeground)
+
+        let mixerLid = new Sprite(Assets.spritesheet("glass").textures[3]);
+        mixerLid.anchor.set(0.5, 0.5)
+        mixerLid.zIndex = 15
+
+        this.lid = this.addChild(mixerLid)
+        this.hideLid()
+
+        updateables.push(this)
+    }
+
+    hideLid() {
+        this.lid.visible = false;
+    }
+
+    putOnLid(): IsDoneFunction {
+        this.lid.visible = true
+        this.lid.y = -500;
+
+        return () => this.lid.y == 0
+    }
+
+    update(dt: number): void {
+        if (this.lid.y < 0) {
+            this.lid.y += dt * 20;
+
+            if (this.lid.y > 0) {
+                this.lid.y = 0
+            }
+        }
+    }
 }

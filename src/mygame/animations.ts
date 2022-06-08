@@ -55,3 +55,6 @@ export function animate_dropIngredients(ingredient: Ingredient): IsDoneFunction 
     return isDoneDropping
 }
 
+export function animate_mixAndServe() {
+    prop_mixer.putOnLid()
+}
