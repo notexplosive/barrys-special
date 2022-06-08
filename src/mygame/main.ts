@@ -4,7 +4,7 @@ import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
-import { IngredientButtons } from "./ui/button";
+import { IngredientButtons, Button, IconButton } from './ui/button';
 import { Tooltip } from "./ui/tooltip";
 import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
@@ -52,12 +52,6 @@ export function main() {
 
     mixture.whenChanged(() => mixtureStatus.refresh())
 
-    mixture.whenChanged(() => {
-        if (mixture.isFilled()) {
-            ingredientButtons.visible = false
-        }
-    })
-
     const tooltip = new Tooltip()
     tooltip.position.set(origin.x, origin.y + 120)
     mainGameUi.addChild(tooltip);
@@ -70,8 +64,34 @@ export function main() {
         ingredientButtons.addIngredientButton(ingredient)
     }
 
+    let serveButtons = mainGameUi.addChild(new Container())
+    serveButtons.visible = false
+    serveButtons.y = 464
+
+    const mixButton = new IconButton(Assets.spritesheet("icons").textures[0], () => {
+        serveButtons.visible = false
+    });
+    serveButtons.addChild(mixButton)
+
+    const cancelButton = new IconButton(Assets.spritesheet("icons").textures[1], () => {
+        serveButtons.visible = false
+        ingredientButtons.visible = true
+        mixture.clearIngredients()
+    });
+    cancelButton.x = 128 + 10
+    serveButtons.addChild(cancelButton)
+
+    mixture.whenChanged(() => {
+        if (mixture.isFilled()) {
+            ingredientButtons.visible = false
+            tooltip.setText("Ready!")
+            serveButtons.visible = true
+        }
+    })
+
+    // update the updaters
     game.updaters.push(new Updater((dt) => {
-        let snapshot = updateables.concat([])
+        let snapshot = updateables.concat([]) // want to buy array.clone()
         for (let updatable of snapshot) {
             updatable.update(dt)
         }

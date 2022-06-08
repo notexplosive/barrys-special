@@ -116,6 +116,18 @@ export class PageButton extends Button {
     }
 }
 
+export class IconButton extends Button {
+    constructor(iconTexture: Texture, callback: Function) {
+        super(
+            Assets.spritesheet("buttons").textures[0],
+            Assets.spritesheet("buttons").textures[1],
+            Assets.spritesheet("buttons").textures[2],
+            iconTexture,
+            callback
+        )
+    }
+}
+
 export class IngredientButtons extends Container implements IUpdateable {
     static readonly buttonWidth = 128;
     static readonly padding = 10
@@ -139,10 +151,12 @@ export class IngredientButtons extends Container implements IUpdateable {
     }
 
     update(dt: number) {
-        this.tooltip.setText("")
-        for (let ingredientButton of this.allIngredientButtonsOnCurrentPage()) {
-            if (ingredientButton.buttonState.isHovered) {
-                this.tooltip.setText(ingredientButton.ingredient.name)
+        if (this.visible) {
+            this.tooltip.setText("")
+            for (let ingredientButton of this.allIngredientButtonsOnCurrentPage()) {
+                if (ingredientButton.buttonState.isHovered) {
+                    this.tooltip.setText(ingredientButton.ingredient.name)
+                }
             }
         }
     }

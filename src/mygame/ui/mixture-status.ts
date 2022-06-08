@@ -43,8 +43,12 @@ export class MixtureStatus extends Container {
             this.visible = true
         }
 
-        for (let i = 0; i < ingredients.length; i++) {
-            this.slots[i].texture = ingredients[i].texture()
+        for (let i = 0; i < 3; i++) {
+            if (i < ingredients.length) {
+                this.slots[i].texture = ingredients[i].texture()
+            } else {
+                this.slots[i].texture = null
+            }
         }
     }
 }
