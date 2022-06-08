@@ -68,24 +68,33 @@ export function main() {
     serveButtons.visible = false
     serveButtons.y = 464
 
-    const mixButton = new IconButton(Assets.spritesheet("icons").textures[0], () => {
-        serveButtons.visible = false
-    });
-    serveButtons.addChild(mixButton)
-
-    const cancelButton = new IconButton(Assets.spritesheet("icons").textures[1], () => {
+    function resetToNormal_state() {
         serveButtons.visible = false
         ingredientButtons.visible = true
         mixture.clearIngredients()
+    }
+
+    const mixButton = new IconButton(Assets.spritesheet("icons").textures[0], () => {
+        // resetToNormal_state()
+    });
+    serveButtons.addChild(mixButton)
+
+
+    const cancelButton = new IconButton(Assets.spritesheet("icons").textures[1], () => {
+        resetToNormal_state()
     });
     cancelButton.x = 128 + 10
     serveButtons.addChild(cancelButton)
 
+    function readyToServe_state() {
+        ingredientButtons.visible = false
+        tooltip.setText("Ready!")
+        serveButtons.visible = true
+    }
+
     mixture.whenChanged(() => {
         if (mixture.isFilled()) {
-            ingredientButtons.visible = false
-            tooltip.setText("Ready!")
-            serveButtons.visible = true
+            readyToServe_state()
         }
     })
 
