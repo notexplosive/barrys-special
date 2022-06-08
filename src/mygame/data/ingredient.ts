@@ -15,7 +15,7 @@ export class Ingredient {
     }
 
     public static readonly All = [
-        new Ingredient("Autumnleaf", 0),
+        new Ingredient("Fresh Autumn Leaf", 0),
         new Ingredient("Wonderberry", 1),
         new Ingredient("Hedgehog Fur", 2),
         new Ingredient("Copy Bean", 3),
