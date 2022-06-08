@@ -39,13 +39,15 @@ export function main() {
 
     // let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 
+    let mainGameUi = game.rootContainer.addChild(new Container())
+
     const tooltip = new Tooltip()
     tooltip.position.set(origin.x, origin.y + 120)
-    game.rootContainer.addChild(tooltip);
+    mainGameUi.addChild(tooltip);
 
     let buttonRow = new ButtonRow(tooltip);
     buttonRow.y = 464
-    game.rootContainer.addChild(buttonRow)
+    mainGameUi.addChild(buttonRow)
 
     for (let ingredient of Ingredient.All) {
         buttonRow.addIngredientButton(ingredient)
