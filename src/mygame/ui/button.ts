@@ -1,8 +1,10 @@
 import { Container, Texture, Sprite } from "pixi.js";
+import { game } from "../..";
 import { Assets } from "../../limbo/core/assets";
 import { animate_dropIngredients } from "../animations";
 import { Ingredient } from "../data/ingredient";
-import { IUpdateable, updateables } from "../main";
+import { IUpdateable, updateables } from '../main';
+import { Tooltip } from "./tooltip";
 
 export class Button extends Container implements IUpdateable {
     protected readonly idleButtonTexture: Texture;
@@ -10,8 +12,7 @@ export class Button extends Container implements IUpdateable {
     protected readonly pressedButtonTexture: Texture;
     protected readonly buttonImageSprite: Sprite;
     protected readonly buttonBackgroundSprite: Sprite;
-    protected readonly buttonState = { isEngaged: false, isHovered: false }
-
+    public readonly buttonState = { isEngaged: false, isHovered: false }
 
     constructor(parentRow: Container, idleButtonTexture: Texture, hoverButtonTexture: Texture, pressedButtonTexture: Texture, buttonImageTexture: Texture, onClicked: Function) {
         super()
@@ -79,6 +80,8 @@ export class Button extends Container implements IUpdateable {
 }
 
 export class IngredientButton extends Button {
+    readonly ingredient: Ingredient;
+
     constructor(parentRow: Container, ingredient: Ingredient) {
         super(
             parentRow,
@@ -88,6 +91,8 @@ export class IngredientButton extends Button {
             ingredient.texture(),
             () => { animate_dropIngredients(ingredient) }
         )
+
+        this.ingredient = ingredient;
     }
 }
 
@@ -109,7 +114,7 @@ export class PageButton extends Button {
     }
 }
 
-export class ButtonRow extends Container {
+export class ButtonRow extends Container implements IUpdateable {
     static readonly buttonWidth = 128;
     static readonly padding = 10
     private currentPage: number;
@@ -119,24 +124,51 @@ export class ButtonRow extends Container {
     private readonly pageRightButton: PageButton;
     private readonly leftSpacer: Container = new Container();
     private readonly rightSpacer: Container = new Container();
+    private readonly tooltip: Tooltip;
 
-    constructor() {
+    constructor(tooltip: Tooltip) {
         super()
+        this.tooltip = tooltip;
         this.pageLeftButton = new PageButton(this, -1);
         this.pageRightButton = new PageButton(this, 1);
+        updateables.push(this)
+    }
+
+    update(dt: number) {
+        this.tooltip.setText("")
+        for (let ingredientButton of this.allIngredientButtonsOnCurrentPage()) {
+            if (ingredientButton.buttonState.isHovered) {
+                this.tooltip.setText(ingredientButton.ingredient.name)
+            }
+        }
+    }
+
+    allIngredientButtonsOnCurrentPage(): IngredientButton[] {
+        let startIndex = this.currentPage * this.pageLength
+        let endIndex = startIndex + this.pageLength
+        let lastIndexOfArray = this.allIngredientButtons.length - 1
+
+        if (endIndex >= lastIndexOfArray) {
+            endIndex = lastIndexOfArray + 1
+        }
+
+        let result = []
+
+        for (let i = startIndex; i < endIndex; i++) {
+            result.push(this.allIngredientButtons[i])
+        }
+
+        return result
     }
 
     solveLayout() {
         this.removeChildren(0, this.children.length)
-
         let lastIndexOfArray = this.allIngredientButtons.length - 1
         let isFirstPage = this.currentPage == 0
         let startIndex = this.currentPage * this.pageLength
         let endIndex = startIndex + this.pageLength
-
         let isLastPage = false
         if (endIndex >= lastIndexOfArray) {
-            endIndex = lastIndexOfArray
             isLastPage = true
         }
 
@@ -146,8 +178,8 @@ export class ButtonRow extends Container {
             this.addChild(this.leftSpacer);
         }
 
-        for (let i = startIndex; i < endIndex; i++) {
-            this.addChild(this.allIngredientButtons[i])
+        for (let button of this.allIngredientButtonsOnCurrentPage()) {
+            this.addChild(button)
         }
 
         if (!isLastPage) {

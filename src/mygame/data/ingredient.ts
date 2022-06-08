@@ -16,19 +16,19 @@ export class Ingredient {
 
     public static readonly All = [
         new Ingredient("Autumnleaf", 0),
-        new Ingredient("Wondernut", 1),
+        new Ingredient("Wonderberry", 1),
         new Ingredient("Hedgehog Fur", 2),
-        new Ingredient("Wedgewood Seed", 3),
+        new Ingredient("Copy Bean", 3),
         new Ingredient("Ice Dragon Tooth", 4),
-        new Ingredient("Swirlroot", 5),
+        new Ingredient("Whirlroot", 5),
         new Ingredient("Chemical B", 6),
         new Ingredient("Jellyfruit", 7),
         new Ingredient("Lanky Mushroom", 8),
         new Ingredient("Crumpleweed", 9),
         new Ingredient("Wobby Booger", 10),
-        new Ingredient("Wavekelp", 11),
+        new Ingredient("Wigglekelp", 11),
         new Ingredient("Motor Oil", 12),
         new Ingredient("Happynut", 13),
-        new Ingredient("Uncle Jim's Funny Herb", 14),
+        new Ingredient("Funny Herb", 14),
     ]
 }

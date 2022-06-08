@@ -12,6 +12,7 @@
   "author": "NotExplosive",
   "license": "MIT",
   "devDependencies": {
+    "@types/webfontloader": "^1.6.34",
     "copy-webpack-plugin": "^11.0.0",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.3.0",
@@ -24,6 +25,7 @@
   "dependencies": {
     "@pixi/sound": "^4.2.0",
     "pixi-viewport": "^4.34.4",
-    "pixi.js": "^6.4.2"
+    "pixi.js": "^6.4.2",
+    "webfontloader": "^1.6.28"
   }
 }

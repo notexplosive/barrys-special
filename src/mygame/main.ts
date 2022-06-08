@@ -1,10 +1,11 @@
 import { game } from "../index";
-import { Container, Point, Sprite, Texture } from "pixi.js";
+import { Container, Point, Sprite, Texture, Text, TextStyle } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
 import { animate_dropIngredients } from "./animations";
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { ButtonRow } from "./ui/button";
+import { Tooltip } from "./ui/tooltip";
 
 export let prop_hand: Sprite;
 export let prop_mixer: Sprite;
@@ -36,10 +37,13 @@ export function main() {
     game.world.addChild(prop_hand)
     game.world.setZoom(1.5, true)
 
-    let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
+    // let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 
+    const tooltip = new Tooltip()
+    tooltip.position.set(origin.x, origin.y + 120)
+    game.rootContainer.addChild(tooltip);
 
-    let buttonRow = new ButtonRow();
+    let buttonRow = new ButtonRow(tooltip);
     buttonRow.y = 464
     game.rootContainer.addChild(buttonRow)
 

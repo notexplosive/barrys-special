@@ -1,5 +1,6 @@
 import { AssetLoader, prepareLoad } from '../limbo/core/assets';
 import { gridBasedSpriteSheetData } from '../limbo/data/grid-based-sprite-sheet-data';
+import WebFont from 'webfontloader';
 
 export function preload() {
     prepareLoad(AssetLoader.Texture, "background", "background.png")
@@ -7,4 +8,10 @@ export function preload() {
     prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "ingredients", "barrys-ingredients.png")
     prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "glass", "barrys-glass.png")
     prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "buttons", "buttons.png")
+
+    WebFont.load({
+        google: {
+            families: ['Concert One']
+        }
+    });
 }
