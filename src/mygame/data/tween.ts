@@ -1,3 +1,5 @@
+import { Point } from "pixi.js";
+
 export type IsDoneFunction = () => boolean
 export type EaseFunction = (x: number) => number
 
@@ -7,7 +9,12 @@ export class EaseFunctions {
     }
 }
 
-export class Tween<T> {
+export interface ITween {
+    updateAndGetOverflow(dt: number): number
+    isDone(): boolean
+}
+
+export class Tween<T> implements ITween {
     duration: number;
     currentTime: number;
     tweenable: Tweenable<T>;
@@ -28,18 +35,88 @@ export class Tween<T> {
         return this.currentTime / this.duration
     }
 
-    update(dt: number) {
+    updateAndGetOverflow(dt: number) {
+        if (this.currentTime == 0) {
+            // this is our first update, acquire the "new" starting value (if it changed)
+            this.startingValue = this.tweenable.get()
+        }
+
+        let overflow = 0
         this.currentTime = + dt
 
         if (this.currentTime > this.duration) {
+            overflow = this.currentTime - this.duration
             this.currentTime = this.duration
         }
 
+        this.apply()
+        return overflow
+    }
+
+    private apply() {
         this.tweenable.set(this.tweenable.lerpFunction(this.startingValue, this.targetValue, this.percent()))
     }
 
     isDone() {
         return this.percent() >= 1
+    }
+
+    reset() {
+        this.currentTime = 0
+        this.apply()
+    }
+
+    skip() {
+        this.currentTime = this.duration
+        this.apply()
+    }
+}
+
+export class TweenChain implements ITween {
+    private readonly chain: ITween[] = []
+    private currentChainIndex = 0
+
+    isDone(): boolean {
+        return this.currentChainIndex >= this.chain.length
+    }
+
+    updateAndGetOverflow(dt: number): number {
+        if (this.isDone()) {
+            return 0
+        }
+        const currentItem = this.currentChainItem()
+        let overflow = currentItem.updateAndGetOverflow(dt)
+
+        if (currentItem.isDone()) {
+            this.currentChainIndex++
+            this.updateAndGetOverflow(overflow)
+        }
+
+        return 0
+    }
+
+    update(dt: number) {
+        // update and throw away overflow result (client code doesn't care)
+        this.updateAndGetOverflow(dt)
+    }
+
+    add(tween: ITween) {
+        this.chain.push(tween)
+    }
+
+    addNumberTween(tweenable: TweenableNumber, targetValue: number, duration: number, easeFunction: EaseFunction) {
+        this.add(new Tween<number>(tweenable, targetValue, duration, easeFunction))
+    }
+
+    addPointTween(tweenable: TweenablePoint, targetValue: Point, duration: number, easeFunction: EaseFunction) {
+        this.add(new Tween<Point>(tweenable, targetValue, duration, easeFunction))
+    }
+
+    private currentChainItem() {
+        if (this.chain.length > this.currentChainIndex) {
+            return this.chain[this.currentChainIndex]
+        }
+        return null
     }
 }
 
@@ -61,8 +138,18 @@ export class Tweenable<T> {
     }
 }
 
+function numberLerp(start: number, end: number, percent: number) {
+    return start + (end - start) * percent
+}
+
 export class TweenableNumber extends Tweenable<number>{
     constructor(startingValue: number) {
-        super(startingValue, (start, end, percent) => { return start + (end - start) * percent })
+        super(startingValue, numberLerp)
+    }
+}
+
+export class TweenablePoint extends Tweenable<Point>{
+    constructor(startingValue: Point) {
+        super(startingValue, (start, end, percent) => { return new Point(numberLerp(start.x, end.x, percent), numberLerp(start.y, end.y, percent)) })
     }
 }
