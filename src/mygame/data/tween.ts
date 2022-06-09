@@ -32,8 +32,12 @@ abstract class ConditionTween implements ITween {
 }
 
 abstract class InstantBehaviorTween implements ITween {
+    private hasFired: boolean;
     updateAndGetOverflow(dt: number): number {
-        this.behavior()
+        if (!this.hasFired) {
+            this.behavior()
+            this.hasFired = true;
+        }
         return dt; // instant tweens overflow all of their time because they take none
     }
 
@@ -67,6 +71,38 @@ export class WaitUntilTween extends ConditionTween {
 
     condition(): boolean {
         return this.callback()
+    }
+}
+
+export class MultiplexTween implements ITween {
+    private readonly contents: ITween[] = []
+
+    updateAndGetOverflow(dt: number): number {
+        let totalOverflow = 0
+        for (let tween of this.contents) {
+            let overflow = tween.updateAndGetOverflow(dt)
+            if (totalOverflow === 0) {
+                totalOverflow = overflow
+            } else {
+                totalOverflow = Math.min(totalOverflow, overflow)
+            }
+        }
+
+        return totalOverflow
+    }
+
+    isDone(): boolean {
+        for (let tween of this.contents) {
+            if (!tween.isDone()) {
+                return false
+            }
+        }
+        return true
+    }
+
+    addChannel(tween: ITween) {
+        this.contents.push(tween)
+        return this
     }
 }
 

@@ -1,5 +1,5 @@
 import { Point } from 'pixi.js';
-import { Tween, TweenableNumber, EaseFunctions, Tweenable, TweenChain, TweenablePoint, CallbackTween, WaitUntilTween } from '../src/mygame/data/tween';
+import { Tween, TweenableNumber, EaseFunctions, Tweenable, TweenChain, TweenablePoint, CallbackTween, WaitUntilTween, MultiplexTween } from '../src/mygame/data/tween';
 
 describe("tweens", () => {
     test("lerps accurately from 0 to 100", () => {
@@ -51,6 +51,68 @@ describe("tweens", () => {
         sourcePoint.x = -10
 
         expect(tween.startingValue).toMatchObject(new Point(0, 0))
+    });
+
+    test("multiplex tween increments both child tweens", () => {
+        let tweenable1 = TweenableNumber.FromConstant(0);
+        let tweenable2 = TweenableNumber.FromConstant(0);
+        let tween1 = new Tween<number>(tweenable1, 100, 1, EaseFunctions.linear);
+        let tween2 = new Tween<number>(tweenable2, 200, 1, EaseFunctions.linear);
+        let tween = new MultiplexTween()
+            .addChannel(tween1)
+            .addChannel(tween2)
+
+        tween.updateAndGetOverflow(0.5)
+
+        expect(tweenable1.get()).toBe(50)
+        expect(tweenable2.get()).toBe(100)
+    });
+
+    test("multiplex tween continues when one tween is done", () => {
+        let tweenable1 = TweenableNumber.FromConstant(0);
+        let tweenable2 = TweenableNumber.FromConstant(0);
+        let tween1 = new Tween<number>(tweenable1, 100, 0.25, EaseFunctions.linear);
+        let tween2 = new Tween<number>(tweenable2, 100, 1, EaseFunctions.linear);
+        let tween = new MultiplexTween()
+            .addChannel(tween1)
+            .addChannel(tween2)
+
+        tween.updateAndGetOverflow(0.5)
+
+        expect(tweenable1.get()).toBe(100)
+        expect(tweenable2.get()).toBe(50)
+    });
+
+    test("multiplex tween repoorts correct overflow", () => {
+        let tweenable1 = TweenableNumber.FromConstant(0);
+        let tweenable2 = TweenableNumber.FromConstant(0);
+        let tween1 = new Tween<number>(tweenable1, 100, 0.25, EaseFunctions.linear);
+        let tween2 = new Tween<number>(tweenable2, 200, 1, EaseFunctions.linear);
+        let tween = new MultiplexTween()
+            .addChannel(tween1)
+            .addChannel(tween2)
+
+        let overflow = tween.updateAndGetOverflow(1.2)
+
+        expect(overflow).toBeCloseTo(0.2)
+    });
+
+    test("multiplex tween only fires callback once when stalled", () => {
+        let hit = 0
+        let tweenable1 = TweenableNumber.FromConstant(0);
+        let tweenable2 = TweenableNumber.FromConstant(0);
+        let tween1 = new CallbackTween(() => { hit++ })
+        let tween2 = new Tween<number>(tweenable2, 200, 1, EaseFunctions.linear);
+        let tween = new MultiplexTween()
+            .addChannel(tween1)
+            .addChannel(tween2)
+
+        tween.updateAndGetOverflow(0.2)
+        tween.updateAndGetOverflow(0.2)
+        tween.updateAndGetOverflow(0.2)
+        tween.updateAndGetOverflow(0.2)
+
+        expect(hit).toBe(1)
     });
 });
 
