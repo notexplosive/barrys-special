@@ -16,8 +16,8 @@ export let prop_hand: Hand;
 export let prop_mixer: Mixer;
 export let prop_patron: PatronHolder;
 export let updateables: IUpdateable[] = [];
+export let camera: Camera;
 export const currentMixture = new Mixture()
-export let cameraRestingPosition = new Point(0, 0)
 
 export interface IUpdateable {
     update(dt: number): void;
@@ -58,7 +58,7 @@ export function main() {
     prop_hand.anchor.set(0.5, 0.5)
     game.world.addChild(prop_hand)
     game.world.setZoom(1.5, true)
-    cameraRestingPosition = game.world.position.clone()
+    camera = new Camera(game.world.position.clone())
 
     // let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 
@@ -233,4 +233,21 @@ export class PatronHolder extends Container {
         this.patron = patron
         this.addChild(patron)
     }
+}
+
+export class Camera {
+    readonly tweenablePosition = new TweenablePoint(() => game.world.position, v => game.world.position = v)
+    readonly restingPosition: Point;
+    readonly downPosition: Point;
+    readonly upPosition: Point;
+
+    constructor(restingPosition: Point) {
+        this.restingPosition = restingPosition
+        this.downPosition = addPoints(this.restingPosition, new Point(0, -100))
+        this.upPosition = addPoints(this.restingPosition, new Point(0, 100))
+    }
+}
+
+export function addPoints(left: Point, right: Point) {
+    return new Point(left.x + right.x, left.y + right.y)
 }

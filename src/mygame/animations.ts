@@ -4,7 +4,7 @@ import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
 import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween, DynamicTween, Tweenable, TweenablePoint, ITween } from './data/tween';
 import { createDropParticle, DropParticle } from './drop-particle';
-import { cameraRestingPosition, currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron } from './main';
+import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera } from './main';
 
 export const animationTween = new TweenChain()
 
@@ -63,10 +63,6 @@ export function animate_dropIngredients(ingredient: Ingredient) {
         }))
 }
 
-function addPoints(left: Point, right: Point) {
-    return new Point(left.x + right.x, left.y + right.y)
-}
-
 function handAndMixerTogether(tweenGenerator: (handOrMixer: Mixer | Hand) => ITween) {
     return new DynamicTween(() => new MultiplexTween()
         .addChannel(
@@ -78,13 +74,10 @@ function handAndMixerTogether(tweenGenerator: (handOrMixer: Mixer | Hand) => ITw
 }
 
 export function animate_mixAndServe() {
-    const cameraTweenablePosition = new TweenablePoint(() => game.world.position, v => game.world.position = v)
-    const cameraDownPosition = addPoints(cameraRestingPosition, new Point(0, -100))
-
     function shakeCamera() {
         return new TweenChain()
-            .add(new Tween(cameraTweenablePosition, addPoints(cameraDownPosition, new Point(noise(5), 10)), 0.15, EaseFunctions.quadSlowFastSlow))
-            .add(new Tween(cameraTweenablePosition, addPoints(cameraDownPosition, new Point(noise(5), -10)), 0.15, EaseFunctions.quadSlowFastSlow))
+            .add(new Tween(camera.tweenablePosition, addPoints(camera.downPosition, new Point(noise(5), 10)), 0.15, EaseFunctions.quadSlowFastSlow))
+            .add(new Tween(camera.tweenablePosition, addPoints(camera.downPosition, new Point(noise(5), -10)), 0.15, EaseFunctions.quadSlowFastSlow))
     }
 
     animationTween.add(
@@ -96,7 +89,7 @@ export function animate_mixAndServe() {
                         (handAndMixer) => new DynamicTween(() =>
                             new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 1000), 0.25, EaseFunctions.quadSlowFast))))
             )
-            .addChannel(new Tween(cameraTweenablePosition, cameraDownPosition, 0.75, EaseFunctions.quadFastSlow))
+            .addChannel(new Tween(camera.tweenablePosition, camera.downPosition, 0.75, EaseFunctions.quadFastSlow))
     )
 
     animationTween.add(new WaitSecondsTween(0.25))
@@ -104,7 +97,7 @@ export function animate_mixAndServe() {
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
-    animationTween.add(new Tween(cameraTweenablePosition, addPoints(cameraRestingPosition, new Point(0, 100)), 0.5, EaseFunctions.quadFastSlow))
+    animationTween.add(new Tween(camera.tweenablePosition, addPoints(camera.restingPosition, new Point(0, 100)), 0.5, EaseFunctions.quadFastSlow))
 
     animationTween.add(handAndMixerTogether(
         (handAndMixer) => new DynamicTween(() =>
@@ -125,7 +118,7 @@ export function animate_mixAndServe() {
 
         )))
 
-    animationTween.add(new Tween(cameraTweenablePosition, cameraRestingPosition, 0.5, EaseFunctions.quadFastSlow))
+    animationTween.add(new Tween(camera.tweenablePosition, camera.restingPosition, 0.5, EaseFunctions.quadFastSlow))
 
     // cleanup
     animationTween.add(new CallbackTween(() => {
@@ -165,6 +158,7 @@ export function animate_spawnMixer() {
 
 export function animate_patronEnters() {
     animationTween.add(new CallbackTween(() => { prop_patron.position = addPoints(prop_patron.entrancePosition, new Point(0, 50)) }))
+    animationTween.add(new Tween(camera.tweenablePosition, camera.upPosition, 0.5, EaseFunctions.quadSlowFastSlow))
 
     let travelTime = 2
     let bobAmount = 0.1
@@ -189,4 +183,5 @@ export function animate_patronEnters() {
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 55)), 0.3, EaseFunctions.quadSlowFast))
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -30)), 0.25, EaseFunctions.quadFastSlow))
     animationTween.add(new Tween(prop_patron.tweenablePosition, prop_patron.restingPosition, 0.25, EaseFunctions.quadSlowFast))
+    animationTween.add(new Tween(camera.tweenablePosition, camera.restingPosition, 0.5, EaseFunctions.quadSlowFastSlow))
 }
