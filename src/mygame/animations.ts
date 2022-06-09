@@ -92,7 +92,9 @@ export function animate_mixAndServe() {
             .addChannel(
                 new TweenChain()
                     .add(new Tween<Point>(prop_hand.tweenablePosition, prop_mixer.position, 0.75, EaseFunctions.quadSlowFastSlow))
-                    .add(handAndMixerTogether((handAndMixer) => new DynamicTween(() => new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 1000), 0.25, EaseFunctions.quadSlowFast))))
+                    .add(handAndMixerTogether(
+                        (handAndMixer) => new DynamicTween(() =>
+                            new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 1000), 0.25, EaseFunctions.quadSlowFast))))
             )
             .addChannel(new Tween(cameraTweenablePosition, cameraDownPosition, 0.75, EaseFunctions.quadFastSlow))
     )
@@ -109,14 +111,29 @@ export function animate_mixAndServe() {
             new TweenChain()
                 .add(new CallbackTween(() => { prop_mixer.becomeGlass() }))
                 .add(new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 200), 0.75, EaseFunctions.quadFastSlow))
-                .add(new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 235), 0.25, EaseFunctions.quadSlowFast)))))
+                .add(new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 235), 0.25, EaseFunctions.quadSlowFast))
+        )))
     animationTween.add(new Tween(prop_hand.tweenablePosition, prop_hand.restingPosition, 1, EaseFunctions.quadSlowFastSlow))
 
+    animationTween.add(new WaitSecondsTween(2))
 
-    animationTween.add(new WaitSecondsTween(5)) // temp
+    animationTween.add(new Tween(prop_hand.tweenablePosition, prop_mixer.position, 1, EaseFunctions.quadSlowFastSlow))
+    animationTween.add(handAndMixerTogether(
+        (handAndMixer) => new DynamicTween(() =>
+            new TweenChain()
+                .add(new Tween(handAndMixer.tweenablePosition, prop_hand.restingPosition, 1, EaseFunctions.quadSlowFastSlow))
 
-    animationTween.add(new CallbackTween(() => { prop_hand.position = prop_hand.restingPosition }))
-    animationTween.add(new CallbackTween(() => { prop_mixer.becomeMixer() }))
+        )))
+
+    animationTween.add(new Tween(cameraTweenablePosition, cameraRestingPosition, 0.5, EaseFunctions.quadFastSlow))
+
+    // cleanup
+    animationTween.add(new CallbackTween(() => {
+        prop_hand.position = prop_hand.restingPosition;
+        prop_mixer.becomeMixer()
+    }))
+
+    animate_spawnMixer()
 }
 
 export function animate_putOnLid() {

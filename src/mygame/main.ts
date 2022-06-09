@@ -1,7 +1,7 @@
 import { game } from "../index";
 import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle, TextureLoader } from 'pixi.js';
 import { Assets } from '../limbo/core/assets';
-import { animate_dropIngredients, animate_mixAndServe, animate_putOnLid, animate_removeLid, animationTween } from './animations';
+import { animate_dropIngredients, animate_mixAndServe, animate_putOnLid, animate_removeLid as animate_resetMixer, animationTween } from './animations';
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { IngredientButtons, Button, IconButton } from './ui/button';
@@ -81,18 +81,22 @@ export function main() {
     function resetToNormal_state() {
         serveButtons.visible = false
         ingredientButtons.visible = true
-        animate_removeLid()
         currentMixture.clearIngredients()
     }
 
     const mixButton = new IconButton(Assets.spritesheet("icons").textures[0], () => {
         animate_mixAndServe()
+        animationTween.add(new CallbackTween(() => {
+            console.log("Resetting to normal state")
+            resetToNormal_state()
+        }))
     });
     serveButtons.addChild(mixButton)
 
 
     const cancelButton = new IconButton(Assets.spritesheet("icons").textures[1], () => {
         resetToNormal_state()
+        animate_resetMixer()
     });
     cancelButton.x = 128 + 10
     serveButtons.addChild(cancelButton)
