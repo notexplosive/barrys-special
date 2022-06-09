@@ -42,8 +42,8 @@ export function main() {
 
     const handPositionTweenable = new TweenablePoint(prop_hand.position)
     let chain = new TweenChain()
-        .addPointTween(handPositionTweenable, new Point(origin.x, 120), 5, EaseFunctions.linear)
-        .addPointTween(handPositionTweenable, new Point(origin.x, 160), 5, EaseFunctions.linear)
+        .addPointTween(handPositionTweenable, new Point(origin.x, 120), 1, EaseFunctions.linear)
+        .addPointTween(handPositionTweenable, new Point(origin.x, 160), 1, EaseFunctions.linear)
 
     updateables.push({
         update: (dt: number) => {

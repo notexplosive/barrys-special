@@ -2,7 +2,7 @@ import { Point } from "pixi.js";
 
 export type IsDoneFunction = () => boolean
 export type EaseFunction = (x: number) => number
-type LerpFunction = (start: any, end: any, percent: number) => any; // bad code: should be start : T, end : T, returns -> T, but I couldn't get the type system to cooperate with IClonable
+type LerpFunction<T> = (start: T, end: T, percent: number) => T;
 
 export class EaseFunctions {
     public static linear(x: number) {
@@ -125,9 +125,9 @@ export class TweenChain implements ITween {
 
 export class Tweenable<T> {
     private startingValue: T
-    readonly lerpFunction: LerpFunction;
+    readonly lerpFunction: LerpFunction<T>;
 
-    constructor(startingValue: T, lerpFunction: LerpFunction) {
+    constructor(startingValue: T, lerpFunction: LerpFunction<T>) {
         this.startingValue = startingValue
         this.lerpFunction = lerpFunction
     }
@@ -154,13 +154,15 @@ export class TweenableNumber extends Tweenable<number>{
 }
 
 // Tweenable of an object with a `.clone()` function
-export abstract class TweenableClonable extends Tweenable<IClonable>{
-    constructor(startingValue: IClonable, lerpFunction: LerpFunction) {
-        super(startingValue.clone(), lerpFunction)
+export abstract class TweenableClonable<T> extends Tweenable<T>{
+    constructor(startingValue: T, lerpFunction: LerpFunction<T>) {
+        const dangerousCast = startingValue as unknown as IClonable
+        // @ts-ignore - i don't know how to get the language to cooperate
+        super(dangerousCast.clone(), lerpFunction)
     }
 }
 
-export class TweenablePoint extends TweenableClonable {
+export class TweenablePoint extends TweenableClonable<Point> {
     constructor(startingValue: Point) {
         super(startingValue, (start, end, percent) => { return new Point(numberLerp(start.x, end.x, percent), numberLerp(start.y, end.y, percent)) })
     }
