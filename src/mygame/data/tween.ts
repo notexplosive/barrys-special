@@ -13,6 +13,7 @@ export class EaseFunctions {
 export interface ITween {
     updateAndGetOverflow(dt: number): number
     isDone(): boolean
+    reset(): void
 }
 
 abstract class ConditionTween implements ITween {
@@ -29,14 +30,19 @@ abstract class ConditionTween implements ITween {
     isDone(): boolean {
         return this.condition(0)
     }
+
+    reset(): void {
+        // nothing to do
+    }
 }
 
 abstract class InstantBehaviorTween implements ITween {
-    private hasFired: boolean;
+    private hasExecutedBehavior: boolean;
+
     updateAndGetOverflow(dt: number): number {
-        if (!this.hasFired) {
+        if (!this.hasExecutedBehavior) {
             this.behavior()
-            this.hasFired = true;
+            this.hasExecutedBehavior = true;
         }
         return dt; // instant tweens overflow all of their time because they take none
     }
@@ -46,6 +52,10 @@ abstract class InstantBehaviorTween implements ITween {
     }
 
     abstract behavior(): void
+
+    reset(): void {
+        this.hasExecutedBehavior = false
+    }
 }
 
 export class CallbackTween extends InstantBehaviorTween {
@@ -103,6 +113,12 @@ export class MultiplexTween implements ITween {
     addChannel(tween: ITween) {
         this.contents.push(tween)
         return this
+    }
+
+    reset(): void {
+        for (let tween of this.contents) {
+            tween.reset()
+        }
     }
 }
 
@@ -170,6 +186,18 @@ export class TweenChain implements ITween {
 
     isDone(): boolean {
         return this.currentChainIndex >= this.chain.length
+    }
+
+    reset() {
+        this.currentChainIndex = 0
+        for (let tween of this.chain) {
+            tween.reset()
+        }
+    }
+
+    clear() {
+        this.currentChainIndex = 0
+        this.chain.slice(0, this.chain.length)
     }
 
     updateAndGetOverflow(dt: number): number {
