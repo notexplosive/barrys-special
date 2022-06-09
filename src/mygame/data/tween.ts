@@ -140,6 +140,10 @@ export class Tween<T> implements ITween {
     }
 
     percent() {
+        if (this.duration == 0) {
+            return 1
+        }
+
         return this.currentTime / this.duration
     }
 
@@ -147,6 +151,10 @@ export class Tween<T> implements ITween {
         if (this.currentTime == 0) {
             // this is our first update, acquire the "new" starting value (if it changed)
             this.startingValue = this.tweenable.get()
+        }
+
+        if (this.isDone()) {
+            return dt
         }
 
         let overflow = 0

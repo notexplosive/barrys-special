@@ -1,5 +1,5 @@
 import { Point } from 'pixi.js';
-import { Tween, TweenableNumber, EaseFunctions, Tweenable, TweenChain, TweenablePoint, CallbackTween, WaitUntilTween, MultiplexTween } from '../src/mygame/data/tween';
+import { Tween, TweenableNumber, EaseFunctions, Tweenable, TweenChain, TweenablePoint, CallbackTween, WaitUntilTween, MultiplexTween, WaitSecondsTween } from '../src/mygame/data/tween';
 
 describe("tweens", () => {
     test("lerps accurately from 0 to 100", () => {
@@ -53,6 +53,29 @@ describe("tweens", () => {
         expect(tween.startingValue).toMatchObject(new Point(0, 0))
     });
 
+    test("zero-time delay tween is done instantly", () => {
+        let tween = new WaitSecondsTween(0)
+
+        tween.updateAndGetOverflow(0.5)
+
+        expect(tween.isDone()).toBe(true)
+    });
+
+    test("tweens do not call setter when updated after finish", () => {
+        let source = { x: 0 }
+        let tweenable = new TweenableNumber(() => source.x, v => source.x = v);
+        let tween = new Tween<number>(tweenable, 50, 1, EaseFunctions.linear);
+
+        tween.updateAndGetOverflow(1)
+        source.x = 60
+        let overflowAfterFinish = tween.updateAndGetOverflow(1)
+
+        expect(overflowAfterFinish).toBe(1)
+        expect(source.x).toBe(60)
+    });
+});
+
+describe("multiplex", () => {
     test("multiplex tween increments both child tweens", () => {
         let tweenable1 = TweenableNumber.FromConstant(0);
         let tweenable2 = TweenableNumber.FromConstant(0);
@@ -114,7 +137,7 @@ describe("tweens", () => {
 
         expect(hit).toBe(1)
     });
-});
+})
 
 describe("tween chains", () => {
     test("work with just one item", () => {

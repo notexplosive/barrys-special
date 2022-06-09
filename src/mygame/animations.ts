@@ -4,7 +4,7 @@ import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
 import { IsDoneFunction } from "./data/tween";
 import { createDropParticle } from "./drop-particle";
-import { prop_hand, prop_mixer } from "./main";
+import { prop_hand, prop_mixer, updateables } from './main';
 
 
 export function animate_dropIngredients(ingredient: Ingredient): IsDoneFunction {
@@ -21,17 +21,13 @@ export function animate_dropIngredients(ingredient: Ingredient): IsDoneFunction 
         createDropParticle(prop_hand, prop_mixer, ingredient, 7),
     ]
 
-    droppingUpdater.add((dt) => {
-        for (let dropping of particles) {
-            dropping.update(dt)
-        }
-    });
-
-    game.updaters.push(droppingUpdater)
+    for (let particle of particles) {
+        updateables.push(particle)
+    }
 
     let isDoneDropping = () => {
         for (let particle of particles) {
-            if (!particle.isDone) {
+            if (!particle.tweenChain.isDone()) {
                 return false;
             }
         }
