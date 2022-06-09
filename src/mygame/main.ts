@@ -167,7 +167,7 @@ export class Hand extends Sprite implements IUpdateable {
 
     constructor() {
         super(Assets.spritesheet("glass").textures[0])
-        this.handPositionTweenable = new TweenablePoint(this.position)
+        this.handPositionTweenable = new TweenablePoint(() => this.position, v => this.position = v)
         this.tweenChain = new TweenChain()
             .addPointTween(this.handPositionTweenable, new Point(120, 120), 1, EaseFunctions.linear)
             .addPointTween(this.handPositionTweenable, new Point(160, 160), 1, EaseFunctions.linear)

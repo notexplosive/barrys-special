@@ -1,4 +1,4 @@
-import { Point } from "pixi.js";
+import { IPointData, Point } from "pixi.js";
 
 export type IsDoneFunction = () => boolean
 export type EaseFunction = (x: number) => number
@@ -124,20 +124,22 @@ export class TweenChain implements ITween {
 }
 
 export class Tweenable<T> {
-    private startingValue: T
     readonly lerpFunction: LerpFunction<T>;
+    getter: () => T;
+    setter: (value: T) => void;
 
-    constructor(startingValue: T, lerpFunction: LerpFunction<T>) {
-        this.startingValue = startingValue
+    constructor(getter: () => T, setter: (value: T) => void, lerpFunction: LerpFunction<T>) {
+        this.getter = getter;
+        this.setter = setter;
         this.lerpFunction = lerpFunction
     }
 
     set(newValue: T) {
-        this.startingValue = newValue
+        this.setter(newValue)
     }
 
     get(): T {
-        return this.startingValue
+        return this.getter()
     }
 }
 
@@ -148,22 +150,39 @@ function numberLerp(start: number, end: number, percent: number) {
 type IClonable = { clone: () => IClonable }
 
 export class TweenableNumber extends Tweenable<number>{
-    constructor(startingValue: number) {
-        super(startingValue, numberLerp)
+    constructor(getter: () => number, setter: (value: number) => void) {
+        super(getter, setter, numberLerp)
+    }
+
+    static FromConstant(n: number) {
+        let data = { n }
+        return new TweenableNumber(() => data.n, v => data.n = v)
     }
 }
 
 // Tweenable of an object with a `.clone()` function
 export abstract class TweenableClonable<T> extends Tweenable<T>{
-    constructor(startingValue: T, lerpFunction: LerpFunction<T>) {
-        const dangerousCast = startingValue as unknown as IClonable
+    constructor(getter: () => T, setter: (value: T) => void, lerpFunction: LerpFunction<T>) {
+
+        const newGetter = () => {
+            const dangerousCast = getter() as unknown as IClonable
+            // @ts-ignore - i don't know how to get the language to cooperate
+            return dangerousCast.clone()
+        }
+
         // @ts-ignore - i don't know how to get the language to cooperate
-        super(dangerousCast.clone(), lerpFunction)
+        super(newGetter as () => T, setter, lerpFunction)
     }
 }
 
+function pointLerp(start: IPointData, end: IPointData, percent: number) { return new Point(numberLerp(start.x, end.x, percent), numberLerp(start.y, end.y, percent)) }
+
 export class TweenablePoint extends TweenableClonable<Point> {
-    constructor(startingValue: Point) {
-        super(startingValue, (start, end, percent) => { return new Point(numberLerp(start.x, end.x, percent), numberLerp(start.y, end.y, percent)) })
+    constructor(getter: () => Point, setter: (value: Point) => void) {
+        super(getter, setter, pointLerp)
+    }
+
+    static FromConstant(point: Point) {
+        return new TweenablePoint(() => point, v => point = v)
     }
 }
