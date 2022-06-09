@@ -16,7 +16,7 @@ export function createDropParticle(hand: Container, mixer: Container, ingredient
     particleContainer.rotation = Math.random() * Math.PI * 2
     mixer.addChild(particleContainer)
 
-    return new DropParticle(particleContainer, hand.y, mixer.y, index / 50)
+    return new DropParticle(particleContainer, hand.y, mixer.y, index / 120)
 }
 
 export class DropParticle {
@@ -43,7 +43,11 @@ export class DropParticle {
             .add(new MultiplexTween()
                 // target x,y is 0,0 because we're parented to the mixer
                 .addChannel(new Tween<number>(tweenableX, 0 + noise(40), 0.25 + noise(0.1), EaseFunctions.quadFastSlow))
-                .addChannel(new Tween<number>(tweenableY, 0 + noise(10), 0.5 + noise(0.1), EaseFunctions.quadSlowFast))
+                .addChannel(
+                    new TweenChain()
+                        .add(new Tween<number>(tweenableY, -200 + noise(10), 0.15 + noise(0.1), EaseFunctions.quadFastSlow))
+                        .add(new Tween<number>(tweenableY, 0 + noise(10), 0.25 + noise(0.1), EaseFunctions.quadSlowFast))
+                )
             )
             .add(new CallbackTween(() => this.destroy()))
     }

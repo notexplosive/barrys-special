@@ -1,7 +1,7 @@
 import { game } from "../index";
 import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
-import { animate_dropIngredients, animate_mixAndServe } from './animations';
+import { animate_dropIngredients, animate_mixAndServe, animationTween } from './animations';
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { IngredientButtons, Button, IconButton } from './ui/button';
@@ -20,7 +20,17 @@ export interface IUpdateable {
 }
 
 export function main() {
-    game.setupKey("ArrowUp")
+    updateables.push({
+        update: (dt) => {
+            animationTween.update(dt)
+
+            if (animationTween.isDone() && !animationTween.isEmpty()) {
+                animationTween.clear()
+            }
+
+            mainGameUi.visible = animationTween.isDone() || animationTween.isEmpty()
+        }
+    })
 
     let bar = new Sprite(Assets.texture("background"));
     bar.zIndex = -20
@@ -162,22 +172,15 @@ export class Mixer extends Container implements IUpdateable {
 }
 
 export class Hand extends Sprite implements IUpdateable {
-    readonly tweenChain: TweenChain;
-    readonly handPositionTweenable: TweenablePoint;
+    readonly tweenablePosition: TweenablePoint;
+    readonly restingPosition: Point = new Point(100, 600)
+    readonly activePosition: Point = new Point(200, 250)
 
     constructor() {
         super(Assets.spritesheet("glass").textures[0])
-        this.handPositionTweenable = new TweenablePoint(() => this.position, v => this.position = v)
-        this.tweenChain = new TweenChain()
-            .addPointTween(this.handPositionTweenable, new Point(120, 120), 1, EaseFunctions.linear)
-            .add(new CallbackTween(() => console.log("beep")))
-            .add(new WaitSecondsTween(1))
-            .add(new CallbackTween(() => console.log("boop")))
-            .addPointTween(this.handPositionTweenable, new Point(160, 160), 1, EaseFunctions.linear)
+        this.tweenablePosition = new TweenablePoint(() => this.position, v => this.position = v)
     }
 
     update(dt: number): void {
-        this.tweenChain.update(dt)
-        this.position = this.handPositionTweenable.get()
     }
 }

@@ -222,4 +222,17 @@ describe("tween chains", () => {
 
         expect(tweenable.getter()).toBe(0)
     });
+
+    test("adding to a chain after its finished continues the chain", () => {
+        let tweenable = TweenableNumber.FromConstant(0);
+        let chain = new TweenChain()
+        chain.addNumberTween(tweenable, 100, 1, EaseFunctions.linear)
+
+        chain.update(1.2)
+        chain.update(1)
+        chain.addNumberTween(tweenable, 120, 1, EaseFunctions.linear)
+        chain.update(0.5)
+
+        expect(tweenable.getter()).toBe(110)
+    })
 });

@@ -219,7 +219,7 @@ export class TweenChain implements ITween {
 
     clear() {
         this.currentChainIndex = 0
-        this.chain.slice(0, this.chain.length)
+        this.chain.splice(0, this.chain.length)
     }
 
     updateAndGetOverflow(dt: number): number {
@@ -254,6 +254,10 @@ export class TweenChain implements ITween {
 
     addPointTween(tweenable: TweenablePoint, targetValue: Point, duration: number, easeFunction: EaseFunction): TweenChain {
         return this.add(new Tween<Point>(tweenable, targetValue, duration, easeFunction))
+    }
+
+    isEmpty(): boolean {
+        return this.chain.length == 0
     }
 
     private currentChainItem() {
