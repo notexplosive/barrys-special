@@ -9,7 +9,7 @@ import { Tooltip } from "./ui/tooltip";
 import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
-import { IsDoneFunction } from "./data/tween";
+import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions } from './data/tween';
 
 export let prop_hand: Sprite;
 export let prop_mixer: Mixer;
@@ -39,6 +39,19 @@ export function main() {
     prop_hand.anchor.set(0.5, 0.5)
     game.world.addChild(prop_hand)
     game.world.setZoom(1.5, true)
+
+    const handPositionTweenable = new TweenablePoint(prop_hand.position)
+    let chain = new TweenChain()
+        .addPointTween(handPositionTweenable, new Point(origin.x, 120), 5, EaseFunctions.linear)
+        .addPointTween(handPositionTweenable, new Point(origin.x, 160), 5, EaseFunctions.linear)
+
+    updateables.push({
+        update: (dt: number) => {
+            chain.update(dt)
+            prop_hand.position = handPositionTweenable.get()
+            console.log(prop_hand.y)
+        }
+    })
 
     // let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 

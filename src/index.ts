@@ -24,7 +24,10 @@ if (process.env.NODE_ENV !== "production") {
 document.body.appendChild(app.view);
 
 export const game = new Game(app, { width: app.screen.width, height: app.screen.height }, isDevBuild);
-app.ticker.add((dt) => game.update(dt));
+app.ticker.add(() => {
+  let dt = app.ticker.elapsedMS / 1000
+  game.update(dt)
+});
 
 preload()
 finishLoad(main)

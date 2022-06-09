@@ -2,6 +2,7 @@ import { Point } from "pixi.js";
 
 export type IsDoneFunction = () => boolean
 export type EaseFunction = (x: number) => number
+type LerpFunction = (start: any, end: any, percent: number) => any; // bad code: should be start : T, end : T, returns -> T, but I couldn't get the type system to cooperate with IClonable
 
 export class EaseFunctions {
     public static linear(x: number) {
@@ -42,7 +43,7 @@ export class Tween<T> implements ITween {
         }
 
         let overflow = 0
-        this.currentTime = + dt
+        this.currentTime += dt
 
         if (this.currentTime > this.duration) {
             overflow = this.currentTime - this.duration
@@ -104,12 +105,14 @@ export class TweenChain implements ITween {
         this.chain.push(tween)
     }
 
-    addNumberTween(tweenable: TweenableNumber, targetValue: number, duration: number, easeFunction: EaseFunction) {
+    addNumberTween(tweenable: TweenableNumber, targetValue: number, duration: number, easeFunction: EaseFunction): TweenChain {
         this.add(new Tween<number>(tweenable, targetValue, duration, easeFunction))
+        return this
     }
 
-    addPointTween(tweenable: TweenablePoint, targetValue: Point, duration: number, easeFunction: EaseFunction) {
+    addPointTween(tweenable: TweenablePoint, targetValue: Point, duration: number, easeFunction: EaseFunction): TweenChain {
         this.add(new Tween<Point>(tweenable, targetValue, duration, easeFunction))
+        return this
     }
 
     private currentChainItem() {
@@ -122,9 +125,9 @@ export class TweenChain implements ITween {
 
 export class Tweenable<T> {
     private startingValue: T
-    readonly lerpFunction: (start: T, end: T, percent: number) => T;
+    readonly lerpFunction: LerpFunction;
 
-    constructor(startingValue: T, lerpFunction: (start: T, end: T, percent: number) => T) {
+    constructor(startingValue: T, lerpFunction: LerpFunction) {
         this.startingValue = startingValue
         this.lerpFunction = lerpFunction
     }
@@ -142,13 +145,22 @@ function numberLerp(start: number, end: number, percent: number) {
     return start + (end - start) * percent
 }
 
+type IClonable = { clone: () => IClonable }
+
 export class TweenableNumber extends Tweenable<number>{
     constructor(startingValue: number) {
         super(startingValue, numberLerp)
     }
 }
 
-export class TweenablePoint extends Tweenable<Point>{
+// Tweenable of an object with a `.clone()` function
+export abstract class TweenableClonable extends Tweenable<IClonable>{
+    constructor(startingValue: IClonable, lerpFunction: LerpFunction) {
+        super(startingValue.clone(), lerpFunction)
+    }
+}
+
+export class TweenablePoint extends TweenableClonable {
     constructor(startingValue: Point) {
         super(startingValue, (start, end, percent) => { return new Point(numberLerp(start.x, end.x, percent), numberLerp(start.y, end.y, percent)) })
     }

@@ -21,6 +21,37 @@ describe("tweens", () => {
         expect(tween.currentTime).toBe(0.5)
         expect(tweenable.get()).toBe(75)
     });
+
+    test("tween that takes longer than a second", () => {
+        let tweenable = new TweenableNumber(0);
+        let tween = new Tween<number>(tweenable, 100, 100, EaseFunctions.linear);
+
+        tween.updateAndGetOverflow(20)
+
+        expect(tweenable.get()).toBe(20)
+    });
+
+    test("tween that takes multiple updates", () => {
+        let tweenable = new TweenableNumber(0);
+        let tween = new Tween<number>(tweenable, 100, 100, EaseFunctions.linear);
+
+        tween.updateAndGetOverflow(20)
+        tween.updateAndGetOverflow(10)
+
+        expect(tween.currentTime).toBe(30)
+        expect(tweenable.get()).toBe(30)
+    });
+
+    test("tweenable copies its starting value", () => {
+        let sourcePoint = new Point(0, 0)
+        let tweenable = new TweenablePoint(sourcePoint);
+        let tween = new Tween<Point>(tweenable, new Point(100, 100), 100, EaseFunctions.linear);
+
+        tween.updateAndGetOverflow(20)
+        sourcePoint.x = -10
+
+        expect(tween.startingValue).toMatchObject(new Point(0, 0))
+    });
 });
 
 describe("tween chains", () => {
