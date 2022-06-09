@@ -1,7 +1,7 @@
 import { game } from "../index";
 import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle } from "pixi.js";
 import { Assets } from '../limbo/core/assets';
-import { animate_dropIngredients, IsDoneFunction, animate_mixAndServe } from './animations';
+import { animate_dropIngredients, animate_mixAndServe } from './animations';
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { IngredientButtons, Button, IconButton } from './ui/button';
@@ -9,6 +9,7 @@ import { Tooltip } from "./ui/tooltip";
 import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
+import { IsDoneFunction } from "./data/tween";
 
 export let prop_hand: Sprite;
 export let prop_mixer: Mixer;

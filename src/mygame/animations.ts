@@ -2,10 +2,10 @@ import { Sprite, Texture } from "pixi.js";
 import { game } from "..";
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
+import { IsDoneFunction } from "./data/tween";
 import { createDropParticle } from "./drop-particle";
 import { prop_hand, prop_mixer } from "./main";
 
-export type IsDoneFunction = () => boolean
 
 export function animate_dropIngredients(ingredient: Ingredient): IsDoneFunction {
     let droppingUpdater = new Updater();
