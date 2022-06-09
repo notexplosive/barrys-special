@@ -11,7 +11,7 @@ import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
 import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions } from './data/tween';
 
-export let prop_hand: Sprite;
+export let prop_hand: Hand;
 export let prop_mixer: Mixer;
 export let updateables: IUpdateable[] = [];
 
@@ -33,25 +33,14 @@ export function main() {
     prop_mixer.y = origin.y + 10
     game.world.addChild(prop_mixer)
 
-    prop_hand = new Sprite(Assets.spritesheet("glass").textures[0]);
+    prop_hand = new Hand();
     prop_hand.x = origin.x;
     prop_hand.y = 160
     prop_hand.anchor.set(0.5, 0.5)
     game.world.addChild(prop_hand)
     game.world.setZoom(1.5, true)
 
-    const handPositionTweenable = new TweenablePoint(prop_hand.position)
-    let chain = new TweenChain()
-        .addPointTween(handPositionTweenable, new Point(origin.x, 120), 1, EaseFunctions.linear)
-        .addPointTween(handPositionTweenable, new Point(origin.x, 160), 1, EaseFunctions.linear)
-
-    updateables.push({
-        update: (dt: number) => {
-            chain.update(dt)
-            prop_hand.position = handPositionTweenable.get()
-            console.log(prop_hand.y)
-        }
-    })
+    updateables.push(prop_hand)
 
     // let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 
@@ -169,5 +158,23 @@ export class Mixer extends Container implements IUpdateable {
                 this.lid.y = 0
             }
         }
+    }
+}
+
+export class Hand extends Sprite implements IUpdateable {
+    readonly tweenChain: TweenChain;
+    readonly handPositionTweenable: TweenablePoint;
+
+    constructor() {
+        super(Assets.spritesheet("glass").textures[0])
+        this.handPositionTweenable = new TweenablePoint(this.position)
+        this.tweenChain = new TweenChain()
+            .addPointTween(this.handPositionTweenable, new Point(120, 120), 1, EaseFunctions.linear)
+            .addPointTween(this.handPositionTweenable, new Point(160, 160), 1, EaseFunctions.linear)
+    }
+
+    update(dt: number): void {
+        this.tweenChain.update(dt)
+        this.position = this.handPositionTweenable.get()
     }
 }
