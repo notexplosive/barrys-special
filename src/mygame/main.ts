@@ -10,9 +10,11 @@ import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
 import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions, WaitSecondsTween, CallbackTween, TweenableNumber } from './data/tween';
+import { PatronSprite } from "./ui/patron-sprite";
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
+export let prop_patron: Container;
 export let updateables: IUpdateable[] = [];
 export const currentMixture = new Mixture()
 export let cameraRestingPosition = new Point(0, 0)
@@ -34,11 +36,21 @@ export function main() {
         }
     })
 
+    let background = new Container()
+    let solidColorBg = new Sprite(Assets.texture("solid-color-bg"));
     let bar = new Sprite(Assets.texture("background"));
-    bar.zIndex = -20
-    game.world.addChild(bar)
+    prop_patron = new Container()
+    let patron = new PatronSprite(0.25, Assets.spritesheet("beep"))
+    prop_patron.addChild(patron)
+    background.addChild(solidColorBg)
+    background.addChild(prop_patron)
+    background.addChild(bar)
+
+    background.zIndex = -20
+    game.world.addChild(background)
 
     let origin = new Point(game.world.screenWidth / 2, game.world.screenHeight / 2)
+    patron.position = origin.clone()
 
     prop_mixer = new Mixer(new Point(origin.x, origin.y + 10))
     game.world.addChild(prop_mixer)
