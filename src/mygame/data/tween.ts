@@ -15,6 +15,61 @@ export interface ITween {
     isDone(): boolean
 }
 
+abstract class ConditionTween implements ITween {
+    abstract condition(dt: number): boolean
+
+    updateAndGetOverflow(dt: number): number {
+        if (this.condition(dt)) {
+            return dt // since the condition is met, we pass all the remaining time to the next tween
+        } else {
+            return 0
+        }
+    }
+
+    isDone(): boolean {
+        return this.condition(0)
+    }
+}
+
+abstract class InstantBehaviorTween implements ITween {
+    updateAndGetOverflow(dt: number): number {
+        this.behavior()
+        return dt; // instant tweens overflow all of their time because they take none
+    }
+
+    isDone(): boolean {
+        return true;
+    }
+
+    abstract behavior(): void
+}
+
+export class CallbackTween extends InstantBehaviorTween {
+    callback: () => void;
+
+    constructor(callback: () => void) {
+        super();
+        this.callback = callback;
+    }
+
+    behavior(): void {
+        this.callback()
+    }
+}
+
+export class WaitUntilTween extends ConditionTween {
+    callback: () => boolean;
+
+    constructor(callback: () => boolean) {
+        super();
+        this.callback = callback;
+    }
+
+    condition(): boolean {
+        return this.callback()
+    }
+}
+
 export class Tween<T> implements ITween {
     duration: number;
     currentTime: number;
@@ -103,16 +158,16 @@ export class TweenChain implements ITween {
 
     add(tween: ITween) {
         this.chain.push(tween)
+        return this
     }
 
     addNumberTween(tweenable: TweenableNumber, targetValue: number, duration: number, easeFunction: EaseFunction): TweenChain {
-        this.add(new Tween<number>(tweenable, targetValue, duration, easeFunction))
-        return this
+        return this.add(new Tween<number>(tweenable, targetValue, duration, easeFunction))
+
     }
 
     addPointTween(tweenable: TweenablePoint, targetValue: Point, duration: number, easeFunction: EaseFunction): TweenChain {
-        this.add(new Tween<Point>(tweenable, targetValue, duration, easeFunction))
-        return this
+        return this.add(new Tween<Point>(tweenable, targetValue, duration, easeFunction))
     }
 
     private currentChainItem() {
@@ -157,6 +212,14 @@ export class TweenableNumber extends Tweenable<number>{
     static FromConstant(n: number) {
         let data = { n }
         return new TweenableNumber(() => data.n, v => data.n = v)
+    }
+}
+
+// WaitSeconds is just a NumberTween that throws away its stored value
+export class WaitSecondsTween extends Tween<number> {
+    private static dummy = TweenableNumber.FromConstant(0);
+    constructor(duration: number) {
+        super(WaitSecondsTween.dummy, 0, duration, EaseFunctions.linear)
     }
 }
 

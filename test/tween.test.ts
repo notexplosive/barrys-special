@@ -1,5 +1,5 @@
 import { Point } from 'pixi.js';
-import { Tween, TweenableNumber, EaseFunctions, Tweenable, TweenChain, TweenablePoint } from '../src/mygame/data/tween';
+import { Tween, TweenableNumber, EaseFunctions, Tweenable, TweenChain, TweenablePoint, CallbackTween, WaitUntilTween } from '../src/mygame/data/tween';
 
 describe("tweens", () => {
     test("lerps accurately from 0 to 100", () => {
@@ -94,5 +94,47 @@ describe("tween chains", () => {
         chain.update(0.25)
 
         expect(tweenable.get()).toMatchObject(new Point(25, 25))
+    });
+
+    test("callback tweens work", () => {
+        let tweenable = TweenablePoint.FromConstant(new Point(0, 0));
+        let chain = new TweenChain()
+        let hit = 0
+        chain.addPointTween(tweenable, new Point(100, 100), 0.5, EaseFunctions.linear)
+        chain.add(new CallbackTween(() => { hit++ }))
+        chain.add(new CallbackTween(() => { hit++ }))
+        chain.add(new CallbackTween(() => { hit++ }))
+
+        chain.update(0.6)
+
+        expect(hit).toBe(3)
+    });
+
+    test("wait-until should not continue when blocked", () => {
+        let tweenable = TweenableNumber.FromConstant(0);
+        let chain = new TweenChain()
+        let blocked = true
+        chain.addNumberTween(tweenable, 100, 0.5, EaseFunctions.linear)
+        chain.add(new WaitUntilTween(() => !blocked))
+        chain.addNumberTween(tweenable, 0, 0.05, EaseFunctions.linear)
+
+        chain.update(0.6)
+
+        expect(tweenable.getter()).toBe(100)
+    });
+
+    test("wait-until should continue when not blocked", () => {
+        let tweenable = TweenableNumber.FromConstant(0);
+        let chain = new TweenChain()
+        let blocked = true
+        chain.addNumberTween(tweenable, 100, 0.5, EaseFunctions.linear)
+        chain.add(new WaitUntilTween(() => !blocked))
+        chain.addNumberTween(tweenable, 0, 0.05, EaseFunctions.linear)
+
+        chain.update(0.3)
+        blocked = false
+        chain.update(0.3)
+
+        expect(tweenable.getter()).toBe(0)
     });
 });

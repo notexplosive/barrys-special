@@ -9,7 +9,7 @@ import { Tooltip } from "./ui/tooltip";
 import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
-import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions } from './data/tween';
+import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions, WaitSecondsTween, CallbackTween } from './data/tween';
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
@@ -170,6 +170,9 @@ export class Hand extends Sprite implements IUpdateable {
         this.handPositionTweenable = new TweenablePoint(() => this.position, v => this.position = v)
         this.tweenChain = new TweenChain()
             .addPointTween(this.handPositionTweenable, new Point(120, 120), 1, EaseFunctions.linear)
+            .add(new CallbackTween(() => console.log("beep")))
+            .add(new WaitSecondsTween(1))
+            .add(new CallbackTween(() => console.log("boop")))
             .addPointTween(this.handPositionTweenable, new Point(160, 160), 1, EaseFunctions.linear)
     }
 
