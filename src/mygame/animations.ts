@@ -4,7 +4,7 @@ import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
 import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween, DynamicTween, Tweenable, TweenablePoint, ITween } from './data/tween';
 import { createDropParticle, DropParticle } from './drop-particle';
-import { cameraRestingPosition, currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables } from './main';
+import { cameraRestingPosition, currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron } from './main';
 
 export const animationTween = new TweenChain()
 
@@ -161,4 +161,32 @@ export function animate_spawnMixer() {
     animationTween.add(new Tween(prop_mixer.tweenablePosition, addPoints(prop_mixer.restingPosition, new Point(0, -10)), 0.15, EaseFunctions.quadFastSlow))
     animationTween.add(new Tween(prop_mixer.tweenablePosition, prop_mixer.restingPosition, 0.15, EaseFunctions.quadSlowFast))
     animationTween.add(new CallbackTween(() => prop_mixer.lid.visible = false))
+}
+
+export function animate_patronEnters() {
+    animationTween.add(new CallbackTween(() => { prop_patron.position = addPoints(prop_patron.entrancePosition, new Point(0, 50)) }))
+
+    let travelTime = 2
+    let bobAmount = 0.1
+    animationTween.add(
+        new MultiplexTween()
+            .addChannel(
+                new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 50)), travelTime, EaseFunctions.quadFastSlow)
+            )
+            .addChannel(
+                new TweenChain()
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, 0, 0.25, EaseFunctions.linear))
+            )
+    )
+    animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 55)), 0.3, EaseFunctions.quadSlowFast))
+    animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -30)), 0.25, EaseFunctions.quadFastSlow))
+    animationTween.add(new Tween(prop_patron.tweenablePosition, prop_patron.restingPosition, 0.25, EaseFunctions.quadSlowFast))
 }

@@ -1,7 +1,7 @@
 import { game } from "../index";
 import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle, TextureLoader } from 'pixi.js';
 import { Assets } from '../limbo/core/assets';
-import { animate_dropIngredients, animate_mixAndServe, animate_putOnLid, animate_removeLid as animate_resetMixer, animationTween } from './animations';
+import { animate_dropIngredients, animate_mixAndServe, animate_putOnLid, animate_removeLid as animate_resetMixer, animationTween, animate_patronEnters } from './animations';
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { IngredientButtons, Button, IconButton } from './ui/button';
@@ -14,7 +14,7 @@ import { PatronSprite } from "./ui/patron-sprite";
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
-export let prop_patron: Container;
+export let prop_patron: PatronHolder;
 export let updateables: IUpdateable[] = [];
 export const currentMixture = new Mixture()
 export let cameraRestingPosition = new Point(0, 0)
@@ -35,22 +35,21 @@ export function main() {
             mainGameUi.visible = animationTween.isDone() || animationTween.isEmpty()
         }
     })
+    let origin = new Point(game.world.screenWidth / 2, game.world.screenHeight / 2)
+
 
     let background = new Container()
     let solidColorBg = new Sprite(Assets.texture("solid-color-bg"));
     let bar = new Sprite(Assets.texture("background"));
-    prop_patron = new Container()
-    let patron = new PatronSprite(0.25, Assets.spritesheet("beep"))
-    prop_patron.addChild(patron)
+    prop_patron = new PatronHolder(origin)
+    let beep = new PatronSprite(0.25, Assets.spritesheet("beep"))
+    prop_patron.setPatron(beep)
     background.addChild(solidColorBg)
     background.addChild(prop_patron)
     background.addChild(bar)
 
     background.zIndex = -20
     game.world.addChild(background)
-
-    let origin = new Point(game.world.screenWidth / 2, game.world.screenHeight / 2)
-    patron.position = origin.clone()
 
     prop_mixer = new Mixer(new Point(origin.x, origin.y + 10))
     game.world.addChild(prop_mixer)
@@ -60,8 +59,6 @@ export function main() {
     game.world.addChild(prop_hand)
     game.world.setZoom(1.5, true)
     cameraRestingPosition = game.world.position.clone()
-
-    updateables.push(prop_hand)
 
     // let isDoneDropping = animate_dropIngredients(Ingredient.All[0])
 
@@ -132,6 +129,8 @@ export function main() {
             updatable.update(dt)
         }
     }))
+
+    animate_patronEnters()
 }
 
 
@@ -195,7 +194,7 @@ export class Mixer extends Container {
     }
 }
 
-export class Hand extends Sprite implements IUpdateable {
+export class Hand extends Sprite {
     readonly tweenablePosition: TweenablePoint;
     readonly restingPosition: Point = new Point(100, 600)
     readonly activePosition: Point = new Point(200, 250)
@@ -205,8 +204,33 @@ export class Hand extends Sprite implements IUpdateable {
         this.position = this.restingPosition
         this.tweenablePosition = new TweenablePoint(() => this.position, v => this.position = v)
     }
-
-    update(dt: number): void {
-    }
 }
 
+export class PatronHolder extends Container {
+    private patron: PatronSprite;
+    readonly restingPosition: Point;
+    readonly entrancePosition: Point;
+    readonly exitPosition: Point;
+    readonly tweenablePosition: TweenablePoint;
+    readonly tweenableRotation: TweenableNumber;
+
+    constructor(restingPosition: Point) {
+        super();
+        this.position = restingPosition
+        this.entrancePosition = new Point(restingPosition.x - 1000, restingPosition.y)
+        this.exitPosition = new Point(restingPosition.x + 1000, restingPosition.y)
+        this.tweenablePosition = new TweenablePoint(() => this.position, v => this.position = v)
+
+        // rotation rotates the internal patronsprite and not the holder
+        this.tweenableRotation = new TweenableNumber(() => this.patron.rotation, v => this.patron.rotation = v)
+        this.restingPosition = restingPosition
+    }
+
+    setPatron(patron: PatronSprite) {
+        if (this.patron !== undefined) {
+            this.removeChild(this.patron)
+        }
+        this.patron = patron
+        this.addChild(patron)
+    }
+}
