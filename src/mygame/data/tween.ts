@@ -50,6 +50,37 @@ abstract class ConditionTween implements ITween {
     }
 }
 
+export class DynamicTween implements ITween {
+    generatedTween: ITween;
+    createFunction: () => ITween;
+
+    constructor(createFunction: () => ITween) {
+        this.createFunction = createFunction;
+        this.generatedTween = null
+    }
+
+    updateAndGetOverflow(dt: number): number {
+        if (this.generatedTween === null) {
+            this.generatedTween = this.createFunction()
+        }
+
+        return this.generatedTween.updateAndGetOverflow(dt)
+    }
+
+    isDone(): boolean {
+        if (this.generatedTween === null) {
+            return false
+        } else {
+            return this.generatedTween.isDone()
+        }
+    }
+
+    reset(): void {
+        this.generatedTween = null
+    }
+
+}
+
 abstract class InstantBehaviorTween implements ITween {
     private hasExecutedBehavior: boolean;
 

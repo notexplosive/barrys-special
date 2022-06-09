@@ -2,43 +2,17 @@ import { Point, Sprite, Texture } from "pixi.js";
 import { game } from "..";
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
-import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween } from './data/tween';
+import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween, DynamicTween } from './data/tween';
 import { createDropParticle } from "./drop-particle";
 import { prop_hand, prop_mixer, updateables } from './main';
 
 export const animationTween = new TweenChain()
 
+function noise(scale: number) {
+    return (Math.random() - 0.5) * scale
+}
 
 export function animate_dropIngredients(ingredient: Ingredient) {
-
-    let isDoneDropping = () => true // is overwritten in the callback
-
-    let dropParticles = new CallbackTween(() => {
-        let particles = [
-            createDropParticle(prop_hand, prop_mixer, ingredient, 0),
-            createDropParticle(prop_hand, prop_mixer, ingredient, 1),
-            createDropParticle(prop_hand, prop_mixer, ingredient, 2),
-            createDropParticle(prop_hand, prop_mixer, ingredient, 3),
-            createDropParticle(prop_hand, prop_mixer, ingredient, 4),
-            createDropParticle(prop_hand, prop_mixer, ingredient, 5),
-            createDropParticle(prop_hand, prop_mixer, ingredient, 6),
-            createDropParticle(prop_hand, prop_mixer, ingredient, 7),
-        ]
-
-        for (let particle of particles) {
-            updateables.push(particle)
-        }
-
-        isDoneDropping = () => {
-            for (let particle of particles) {
-                if (!particle.tweenChain.isDone()) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    })
 
     let handTravelTime = 0.5
 
@@ -52,9 +26,32 @@ export function animate_dropIngredients(ingredient: Ingredient) {
             )
             .addChannel(
                 new TweenChain()
-                    .add(new WaitSecondsTween(handTravelTime / 4))
-                    .add(dropParticles)
-                    .add(new WaitUntilTween(() => isDoneDropping()))
+                    .add(new WaitSecondsTween(handTravelTime / 3))
+                    .add(new DynamicTween(() => {
+                        let particles = []
+                        for (let i = 0; i < 10; i++) {
+                            particles.push(createDropParticle(prop_hand, prop_mixer, ingredient, i))
+                        }
+
+                        let particlesMovementMultiplex = new MultiplexTween()
+
+                        for (let particle of particles) {
+                            particlesMovementMultiplex.addChannel(new TweenChain()
+                                .add(new WaitSecondsTween(particle.delay))
+                                .add(new MultiplexTween()
+                                    // target x,y is 0,0 because we're parented to the mixer
+                                    .addChannel(new Tween<number>(particle.tweenableX, 0 + noise(40), 0.25 + noise(0.1), EaseFunctions.quadFastSlow))
+                                    .addChannel(
+                                        new TweenChain()
+                                            .add(new Tween<number>(particle.tweenableY, -200 + noise(10), 0.15 + noise(0.1), EaseFunctions.quadFastSlow))
+                                            .add(new Tween<number>(particle.tweenableY, 0 + noise(10), 0.25 + noise(0.1), EaseFunctions.quadSlowFast))
+                                    )
+                                )
+                            )
+                        }
+
+                        return particlesMovementMultiplex
+                    }))
             )
     )
 }

@@ -16,44 +16,25 @@ export function createDropParticle(hand: Container, mixer: Container, ingredient
     particleContainer.rotation = Math.random() * Math.PI * 2
     mixer.addChild(particleContainer)
 
-    return new DropParticle(particleContainer, hand.y, mixer.y, index / 120)
+    return new DropParticle(particleContainer, index / 120)
 }
 
 export class DropParticle {
     readonly sprite: Sprite;
-    readonly handY: number;
-    readonly mixerY: number;
-    readonly tweenChain: TweenChain;
+    readonly tweenableX: TweenableNumber;
+    readonly tweenableY: TweenableNumber;
+    readonly delay: number;
     isDestroyed: boolean;
 
-    constructor(sprite: Sprite, handY: number, mixerY: number, delay: number) {
+    constructor(sprite: Sprite, delay: number) {
         this.sprite = sprite
-        this.handY = handY;
-        this.mixerY = mixerY;
+        this.delay = delay
 
-        const tweenableX = new TweenableNumber(() => this.sprite.x, value => this.sprite.x = value)
-        const tweenableY = new TweenableNumber(() => this.sprite.y, value => this.sprite.y = value)
-
-        function noise(scale: number) {
-            return (Math.random() - 0.5) * scale
-        }
-
-        this.tweenChain = new TweenChain()
-            .add(new WaitSecondsTween(delay))
-            .add(new MultiplexTween()
-                // target x,y is 0,0 because we're parented to the mixer
-                .addChannel(new Tween<number>(tweenableX, 0 + noise(40), 0.25 + noise(0.1), EaseFunctions.quadFastSlow))
-                .addChannel(
-                    new TweenChain()
-                        .add(new Tween<number>(tweenableY, -200 + noise(10), 0.15 + noise(0.1), EaseFunctions.quadFastSlow))
-                        .add(new Tween<number>(tweenableY, 0 + noise(10), 0.25 + noise(0.1), EaseFunctions.quadSlowFast))
-                )
-            )
-            .add(new CallbackTween(() => this.destroy()))
+        this.tweenableX = new TweenableNumber(() => this.sprite.x, value => this.sprite.x = value)
+        this.tweenableY = new TweenableNumber(() => this.sprite.y, value => this.sprite.y = value)
     }
 
     update(dt: number) {
-        this.tweenChain.update(dt)
         if (!this.isDestroyed) {
             this.sprite.rotation += dt * 5
         }
