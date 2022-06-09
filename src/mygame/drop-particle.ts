@@ -42,7 +42,5 @@ export class DropParticle {
 
     destroy() {
         this.sprite.destroy()
-        this.isDestroyed = true
-        updateables.splice(updateables.indexOf(this), 1)
     }
 }

@@ -1,7 +1,7 @@
 import { game } from "../index";
-import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle } from "pixi.js";
+import { Container, Point, Sprite, Texture, Text, TextStyle, Rectangle, TextureLoader } from 'pixi.js';
 import { Assets } from '../limbo/core/assets';
-import { animate_dropIngredients, animate_mixAndServe, animationTween } from './animations';
+import { animate_dropIngredients, animate_mixAndServe, animate_putOnLid, animate_removeLid, animationTween } from './animations';
 import { Updater } from "../limbo/data/updater";
 import { Ingredient } from './data/ingredient';
 import { IngredientButtons, Button, IconButton } from './ui/button';
@@ -9,11 +9,13 @@ import { Tooltip } from "./ui/tooltip";
 import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
-import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions, WaitSecondsTween, CallbackTween } from './data/tween';
+import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions, WaitSecondsTween, CallbackTween, TweenableNumber } from './data/tween';
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
 export let updateables: IUpdateable[] = [];
+export const currentMixture = new Mixture()
+export let cameraRestingPosition = new Point(0, 0)
 
 export interface IUpdateable {
     update(dt: number): void;
@@ -38,17 +40,14 @@ export function main() {
 
     let origin = new Point(game.world.screenWidth / 2, game.world.screenHeight / 2)
 
-    prop_mixer = new Mixer()
-    prop_mixer.x = origin.x
-    prop_mixer.y = origin.y + 10
+    prop_mixer = new Mixer(new Point(origin.x, origin.y + 10))
     game.world.addChild(prop_mixer)
 
     prop_hand = new Hand();
-    prop_hand.x = origin.x;
-    prop_hand.y = 160
     prop_hand.anchor.set(0.5, 0.5)
     game.world.addChild(prop_hand)
     game.world.setZoom(1.5, true)
+    cameraRestingPosition = game.world.position.clone()
 
     updateables.push(prop_hand)
 
@@ -56,19 +55,18 @@ export function main() {
 
     let mainGameUi = game.rootContainer.addChild(new Container())
 
-    const mixture = new Mixture()
-    const mixtureStatus = new MixtureStatus(mixture)
+    const mixtureStatus = new MixtureStatus(currentMixture)
     mixtureStatus.x = origin.x
     mixtureStatus.y = origin.y + 60
     mainGameUi.addChild(mixtureStatus);
 
-    mixture.whenChanged(() => mixtureStatus.refresh())
+    currentMixture.whenChanged(() => mixtureStatus.refresh())
 
     const tooltip = new Tooltip()
     tooltip.position.set(origin.x, origin.y + 120)
     mainGameUi.addChild(tooltip);
 
-    let ingredientButtons = new IngredientButtons(tooltip, mixture);
+    let ingredientButtons = new IngredientButtons(tooltip, currentMixture);
     ingredientButtons.y = 464
     mainGameUi.addChild(ingredientButtons)
 
@@ -83,8 +81,8 @@ export function main() {
     function resetToNormal_state() {
         serveButtons.visible = false
         ingredientButtons.visible = true
-        prop_mixer.hideLid()
-        mixture.clearIngredients()
+        animate_removeLid()
+        currentMixture.clearIngredients()
     }
 
     const mixButton = new IconButton(Assets.spritesheet("icons").textures[0], () => {
@@ -103,11 +101,10 @@ export function main() {
         ingredientButtons.visible = false
         tooltip.setText("Ready!")
         serveButtons.visible = true
-        prop_mixer.putOnLid()
     }
 
-    mixture.whenChanged(() => {
-        if (mixture.isFilled()) {
+    currentMixture.whenChanged(() => {
+        if (currentMixture.isFilled()) {
             readyToServe_state()
         }
     })
@@ -122,52 +119,63 @@ export function main() {
 }
 
 
-export class Mixer extends Container implements IUpdateable {
+export class Mixer extends Container {
     readonly lid: Sprite;
+    lidTweenableY: TweenableNumber;
+    readonly tweenablePosition: TweenablePoint;
+    restingPosition: Point
+    mixerBackground: Sprite;
+    mixerForeground: Sprite;
+    glassPart: Container;
 
-    constructor() {
+    constructor(restingPosition: Point) {
         super()
+        this.restingPosition = restingPosition
+        this.position = this.restingPosition
         this.sortableChildren = true
 
-        let mixerBackground = new Sprite(Assets.spritesheet("glass").textures[2])
-        mixerBackground.anchor.set(0.5, 0.5)
-        this.addChild(mixerBackground)
-        mixerBackground.zIndex = -10
+        this.mixerBackground = new Sprite(Assets.spritesheet("glass").textures[2])
+        this.mixerBackground.anchor.set(0.5, 0.5)
+        this.addChild(this.mixerBackground)
+        this.mixerBackground.zIndex = -10
 
-        let mixerForeground = new Sprite(Assets.spritesheet("glass").textures[1]);
-        mixerForeground.anchor.set(0.5, 0.5)
-        mixerForeground.zIndex = 10
-        this.addChild(mixerForeground)
+        this.mixerForeground = new Sprite(Assets.spritesheet("glass").textures[1]);
+        this.mixerForeground.anchor.set(0.5, 0.5)
+        this.mixerForeground.zIndex = 10
+        this.addChild(this.mixerForeground)
+
+        this.glassPart = new Container()
+        this.glassPart.sortableChildren = true
+        this.glassPart.visible = false
+        this.addChild(this.glassPart)
+
+        const glassForeground = new Sprite(Assets.spritesheet("glass").textures[4]);
+        glassForeground.anchor.set(0.5, 0.5)
+        glassForeground.zIndex = 10
+        this.glassPart.addChild(glassForeground)
 
         let mixerLid = new Sprite(Assets.spritesheet("glass").textures[3]);
         mixerLid.anchor.set(0.5, 0.5)
         mixerLid.zIndex = 15
 
         this.lid = this.addChild(mixerLid)
-        this.hideLid()
+        this.lid.visible = false
 
-        updateables.push(this)
+        this.tweenablePosition = new TweenablePoint(() => this.position, v => this.position = v)
+        this.lidTweenableY = new TweenableNumber(() => this.lid.y, (val) => this.lid.y = val)
     }
 
-    hideLid() {
-        this.lid.visible = false;
+    becomeGlass() {
+        this.lid.visible = false
+        this.glassPart.visible = true
+        this.mixerForeground.visible = false
+        this.mixerBackground.visible = false
     }
 
-    putOnLid(): IsDoneFunction {
-        this.lid.visible = true
-        this.lid.y = -500;
-
-        return () => this.lid.y == 0
-    }
-
-    update(dt: number): void {
-        if (this.lid.y < 0) {
-            this.lid.y += dt * 20;
-
-            if (this.lid.y > 0) {
-                this.lid.y = 0
-            }
-        }
+    becomeMixer() {
+        this.glassPart.visible = false
+        this.mixerForeground.visible = true
+        this.mixerBackground.visible = true
     }
 }
 
@@ -178,9 +186,11 @@ export class Hand extends Sprite implements IUpdateable {
 
     constructor() {
         super(Assets.spritesheet("glass").textures[0])
+        this.position = this.restingPosition
         this.tweenablePosition = new TweenablePoint(() => this.position, v => this.position = v)
     }
 
     update(dt: number): void {
     }
 }
+
