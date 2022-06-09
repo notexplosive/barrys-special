@@ -41,8 +41,9 @@ export class DropParticle {
         this.tweenChain = new TweenChain()
             .add(new WaitSecondsTween(delay))
             .add(new MultiplexTween()
-                .addChannel(new Tween<number>(tweenableX, 0 + noise(40), 0.25 + noise(0.1), EaseFunctions.linear)) // target x is 0 because our parent is the mixer
-                .addChannel(new Tween<number>(tweenableY, 0 + noise(10), 1 + noise(0.1), EaseFunctions.linear)) // target x is 0 because our parent is the mixer
+                // target x,y is 0,0 because we're parented to the mixer
+                .addChannel(new Tween<number>(tweenableX, 0 + noise(40), 0.25 + noise(0.1), EaseFunctions.quadFastSlow))
+                .addChannel(new Tween<number>(tweenableY, 0 + noise(10), 0.5 + noise(0.1), EaseFunctions.quadSlowFast))
             )
             .add(new CallbackTween(() => this.destroy()))
     }

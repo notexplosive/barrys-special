@@ -8,6 +8,20 @@ export class EaseFunctions {
     public static linear(x: number) {
         return x;
     }
+
+    // the following are from https://easings.net/
+
+    public static quadSlowFast(x: number): number {
+        return x * x
+    }
+
+    public static quadFastSlow(x: number): number {
+        return 1 - EaseFunctions.quadSlowFast(1 - x);
+    }
+
+    public static quadSlowFastSlow(x: number): number {
+        return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+    }
 }
 
 export interface ITween {
@@ -170,7 +184,7 @@ export class Tween<T> implements ITween {
     }
 
     private apply() {
-        this.tweenable.set(this.tweenable.lerpFunction(this.startingValue, this.targetValue, this.percent()))
+        this.tweenable.set(this.tweenable.lerpFunction(this.startingValue, this.targetValue, this.easeFuncion(this.percent())))
     }
 
     isDone() {
