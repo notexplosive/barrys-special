@@ -3,9 +3,9 @@ import { Assets } from "../../limbo/core/assets";
 import { Mixture } from "../data/mixture";
 
 export enum Opinion {
-    Hate = 1,
+    Dislike = 1,
     Neutral = 2,
-    Love = 3
+    Like = 3
 }
 
 export class PatronSprite extends Sprite {

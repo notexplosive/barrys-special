@@ -122,14 +122,14 @@ export function animate_mixAndServe() {
 
         prop_patron.getPatron().patronSprite.showOpinion(opinion)
 
-        if (opinion == Opinion.Love) {
+        if (opinion == Opinion.Like) {
             reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -25)), 0.15, EaseFunctions.quadFastSlow))
             reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 0)), 0.15, EaseFunctions.quadSlowFast))
         }
         if (opinion == Opinion.Neutral) {
             reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -10)), 0.5, EaseFunctions.quadFastSlow))
         }
-        if (opinion == Opinion.Hate) {
+        if (opinion == Opinion.Dislike) {
             reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 25)), 0.5, EaseFunctions.quadFastSlow))
         }
     }))

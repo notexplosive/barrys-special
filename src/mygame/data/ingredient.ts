@@ -40,7 +40,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Juicy, 2)
                 .set(Flavor.Fruity, 1)
-                .set(Flavor.Grouchy, -1)
         ),
         new Ingredient(
             2,
@@ -50,7 +49,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Speedy, 2)
                 .set(Flavor.Grouchy, 1)
-                .set(Flavor.Fruity, -1)
         ),
         new Ingredient(
             3,
@@ -60,7 +58,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Moist, 2)
                 .set(Flavor.Fruity, 1)
-                .set(Flavor.Toxic, -1)
         ),
         new Ingredient(
             4,
@@ -70,7 +67,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Frosty, 2)
                 .set(Flavor.Moist, 1)
-                .set(Flavor.Speedy, -1)
         ),
         new Ingredient(
             5,
@@ -80,7 +76,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Sweet, 2)
                 .set(Flavor.Speedy, 1)
-                .set(Flavor.Crisp, -1)
         ),
         new Ingredient(
             6,
@@ -90,7 +85,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Toxic, 2)
                 .set(Flavor.Oily, 1)
-                .set(Flavor.Fruity, -1)
         ),
         new Ingredient(
             7,
@@ -100,7 +94,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Fruity, 2)
                 .set(Flavor.Juicy, 1)
-                .set(Flavor.Oily, -1)
         ),
         new Ingredient(
             8,
@@ -110,7 +103,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Moist, 2)
                 .set(Flavor.Funny, 1)
-                .set(Flavor.Grouchy, -1)
         ),
         new Ingredient(
             9,
@@ -120,7 +112,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Grouchy, 2)
                 .set(Flavor.Sweet, 1)
-                .set(Flavor.Juicy, -1)
         ),
         new Ingredient(
             10,
@@ -130,7 +121,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Gross, 2)
                 .set(Flavor.Sweet, 1)
-                .set(Flavor.Speedy, -1)
         ),
         new Ingredient(
             11,
@@ -140,7 +130,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Moist, 2)
                 .set(Flavor.Oily, 1)
-                .set(Flavor.Toxic, -1)
         ),
         new Ingredient(
             12,
@@ -150,7 +139,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Oily, 2)
                 .set(Flavor.Gross, 1)
-                .set(Flavor.Fruity, -1)
         ),
         new Ingredient(
             13,
@@ -160,7 +148,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Crisp, 2)
                 .set(Flavor.Funny, 1)
-                .set(Flavor.Juicy, -1)
         ),
         new Ingredient(
             14,
@@ -170,7 +157,6 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Funny, 2)
                 .set(Flavor.Gross, 1)
-                .set(Flavor.Speedy, -1)
         ),
     ]
 }
