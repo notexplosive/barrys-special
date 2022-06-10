@@ -4,14 +4,16 @@ import { Flavor, FlavorProfile } from './flavor';
 
 export class Ingredient {
     readonly name: string;
+    readonly description: string;
     readonly index: number;
     readonly flavorProfile: FlavorProfile;
     readonly color: number;
 
-    constructor(index: number, name: string, color: number, flavorProfile: FlavorProfile) {
+    constructor(index: number, name: string, description: string, color: number, flavorProfile: FlavorProfile) {
         this.name = name;
         this.index = index;
         this.color = color;
+        this.description = description
         this.flavorProfile = flavorProfile;
     }
 
@@ -23,6 +25,7 @@ export class Ingredient {
         new Ingredient(
             0,
             "Fresh Autumn Leaf",
+            "Crisp like an Autumn morning",
             0xf3bc2e,
             new FlavorProfile()
                 .set(Flavor.Crisp, 2)
@@ -32,6 +35,7 @@ export class Ingredient {
         new Ingredient(
             1,
             "Wonderberry",
+            "A very juicy berry that adds a fruity texture",
             0x73172d,
             new FlavorProfile()
                 .set(Flavor.Juicy, 2)
@@ -41,6 +45,7 @@ export class Ingredient {
         new Ingredient(
             2,
             "Hedgehog Fur",
+            "Helps you go fast",
             0x0000ff,
             new FlavorProfile()
                 .set(Flavor.Speedy, 2)
@@ -50,15 +55,17 @@ export class Ingredient {
         new Ingredient(
             3,
             "Copy Bean",
+            "Genetically engineered coffee beans",
             0x71413b,
             new FlavorProfile()
                 .set(Flavor.Moist, 2)
                 .set(Flavor.Fruity, 1)
-                .set(Flavor.Chemically, -1)
+                .set(Flavor.Toxic, -1)
         ),
         new Ingredient(
             4,
             "Ice Dragon Tooth",
+            "Full of Arkane Majicks",
             0x20d6c7,
             new FlavorProfile()
                 .set(Flavor.Frosty, 2)
@@ -68,24 +75,27 @@ export class Ingredient {
         new Ingredient(
             5,
             "Whirlroot",
+            "Sweet and make you dizzy",
             0x793a80,
             new FlavorProfile()
-                .set(Flavor.Wobbly, 2)
+                .set(Flavor.Sweet, 2)
                 .set(Flavor.Speedy, 1)
                 .set(Flavor.Crisp, -1)
         ),
         new Ingredient(
             6,
             "Chemical B",
+            "Some kind of toxic chemical from Psycho-X's lab",
             0x00ff00,
             new FlavorProfile()
-                .set(Flavor.Chemically, 2)
+                .set(Flavor.Toxic, 2)
                 .set(Flavor.Oily, 1)
                 .set(Flavor.Fruity, -1)
         ),
         new Ingredient(
             7,
             "Jellyfruit",
+            "A fruit full of juicy ooze",
             0xaa00aa,
             new FlavorProfile()
                 .set(Flavor.Fruity, 2)
@@ -95,6 +105,7 @@ export class Ingredient {
         new Ingredient(
             8,
             "Lanky Mushroom",
+            "I found these outside",
             0x23674e,
             new FlavorProfile()
                 .set(Flavor.Moist, 2)
@@ -103,34 +114,38 @@ export class Ingredient {
         ),
         new Ingredient(
             9,
-            "Crumpleweed",
+            "Rock Salt",
+            "Big rock of salt",
             0xb3b3b3,
             new FlavorProfile()
                 .set(Flavor.Grouchy, 2)
-                .set(Flavor.Wobbly, 1)
+                .set(Flavor.Sweet, 1)
                 .set(Flavor.Juicy, -1)
         ),
         new Ingredient(
             10,
             "Wobby Booger",
+            "Surprisingly sweet!",
             0xf9a31b,
             new FlavorProfile()
                 .set(Flavor.Gross, 2)
-                .set(Flavor.Wobbly, 1)
+                .set(Flavor.Sweet, 1)
                 .set(Flavor.Speedy, -1)
         ),
         new Ingredient(
             11,
-            "Wigglekelp",
+            "Salty Sea Kelp",
+            "I found this at the beach",
             0x14a02e,
             new FlavorProfile()
                 .set(Flavor.Moist, 2)
                 .set(Flavor.Oily, 1)
-                .set(Flavor.Chemically, -1)
+                .set(Flavor.Toxic, -1)
         ),
         new Ingredient(
             12,
             "Motor Oil",
+            "Good for machines, bad for humans",
             0x000000,
             new FlavorProfile()
                 .set(Flavor.Oily, 2)
@@ -140,6 +155,7 @@ export class Ingredient {
         new Ingredient(
             13,
             "Happynut",
+            "The sweet nut that smiles back",
             0x422433,
             new FlavorProfile()
                 .set(Flavor.Crisp, 2)
@@ -149,6 +165,7 @@ export class Ingredient {
         new Ingredient(
             14,
             "Funny Herb",
+            "Eating it makes people laugh",
             0x1a7a3e,
             new FlavorProfile()
                 .set(Flavor.Funny, 2)

@@ -152,10 +152,10 @@ export class IngredientButtons extends Container implements IUpdateable {
 
     update(dt: number) {
         if (this.visible) {
-            this.tooltip.setText("")
+            this.tooltip.clear()
             for (let ingredientButton of this.allIngredientButtonsOnCurrentPage()) {
                 if (ingredientButton.buttonState.isHovered) {
-                    this.tooltip.setText(ingredientButton.ingredient.name)
+                    this.tooltip.setText(ingredientButton.ingredient.name, ingredientButton.ingredient.description)
                 }
             }
         }

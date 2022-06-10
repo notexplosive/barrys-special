@@ -111,13 +111,13 @@ export function main() {
 
     const mixtureStatus = new MixtureStatus(currentMixture)
     mixtureStatus.x = origin.x
-    mixtureStatus.y = origin.y + 60
+    mixtureStatus.y = origin.y
     mainGameUi.addChild(mixtureStatus);
 
     currentMixture.whenChanged(() => mixtureStatus.refresh())
 
     const tooltip = new Tooltip()
-    tooltip.position.set(origin.x, origin.y + 120)
+    tooltip.position.set(origin.x, origin.y + 90)
     mainGameUi.addChild(tooltip);
 
     let ingredientButtons = new IngredientButtons(tooltip, currentMixture);
@@ -157,7 +157,7 @@ export function main() {
 
     function readyToServe_state() {
         ingredientButtons.visible = false
-        tooltip.setText("Ready!")
+        tooltip.setText("Ready!", "")
         serveButtons.visible = true
     }
 
@@ -228,7 +228,6 @@ export class Mixer extends Container {
         this.glassLiquid = new Sprite(Assets.spritesheet("glass").textures[7]);
         this.glassLiquid.anchor.set(0.5, 0.5)
         this.glassLiquid.zIndex = 17
-        this.glassLiquid.alpha = 0.8
         this.glassLiquid.tint = 0xffffff
         this.glassPart.addChild(this.glassLiquid)
 
