@@ -4,7 +4,7 @@ import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
 import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween, DynamicTween, Tweenable, TweenablePoint, ITween } from './data/tween';
 import { createDropParticle, DropParticle } from './drop-particle';
-import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera } from './main';
+import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera, dialogueBox } from './main';
 import { Opinion } from "./ui/patron-sprite";
 
 export const animationTween = new TweenChain()
@@ -230,7 +230,13 @@ export function animate_patronEnters() {
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 55)), 0.3, EaseFunctions.quadSlowFast))
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -30)), 0.25, EaseFunctions.quadFastSlow))
     animationTween.add(new Tween(prop_patron.tweenablePosition, prop_patron.restingPosition, 0.25, EaseFunctions.quadSlowFast))
+
+    animationTween.add(new WaitSecondsTween(1))
+    animationTween.add(new CallbackTween(() => { dialogueBox.loadPages(["Hey Barry", "Long time no see", "How have you been?"]) }))
+    animationTween.add(new WaitUntilTween(() => dialogueBox.isDone()))
+
     animationTween.add(new Tween(camera.tweenablePosition, camera.restingPosition, 0.5, EaseFunctions.quadSlowFastSlow))
+
 }
 
 export function animate_patronLeaves() {
@@ -260,5 +266,4 @@ export function animate_patronLeaves() {
                     .add(new Tween(prop_patron.tweenableRotation, 0, 0.25, EaseFunctions.linear))
             )
     )
-
 }

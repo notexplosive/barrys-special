@@ -15,6 +15,7 @@ import { Patron } from "./data/patron";
 import { Dialogue } from "./data/dialogue";
 import { Taste } from "./data/taste";
 import { Flavor } from "./data/flavor";
+import { DialogueBox } from "./ui/dialogue-box";
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
@@ -23,6 +24,7 @@ export let updateables: IUpdateable[] = [];
 export let camera: Camera;
 export const currentMixture = new Mixture(3)
 export let allPatrons: Patron[]
+export let dialogueBox: DialogueBox
 
 export interface IUpdateable {
     update(dt: number): void;
@@ -198,6 +200,12 @@ export function main() {
     const tooltip = new Tooltip()
     tooltip.position.set(origin.x, origin.y + 90)
     mainGameUi.addChild(tooltip);
+
+    dialogueBox = new DialogueBox()
+    dialogueBox.position.set(origin.x, 60)
+    game.rootContainer.addChild(dialogueBox)
+
+    updateables.push(dialogueBox)
 
     let ingredientButtons = new IngredientButtons(tooltip, currentMixture);
     ingredientButtons.y = 464
