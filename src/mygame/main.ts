@@ -13,6 +13,7 @@ import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions, W
 import { PatronSprite } from "./ui/patron-sprite";
 import { Patron } from "./data/patron";
 import { Dialogue } from "./data/dialogue";
+import { Taste } from "./data/taste";
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
@@ -30,42 +31,49 @@ export function main() {
     allPatrons = [
         new Patron(
             "Beep",
+            new Taste(),
             new Dialogue(),
             new PatronSprite(0.25, Assets.spritesheet("beep"))
         ),
 
         new Patron(
             "Zap",
+            new Taste(),
             new Dialogue(),
             new PatronSprite(0.3, Assets.spritesheet("zap"))
         ),
 
         new Patron(
             "Skrbaogrk",
+            new Taste(),
             new Dialogue(),
             new PatronSprite(0.5, Assets.spritesheet("creature"))
         ),
 
         new Patron(
             "Psycho-X",
+            new Taste(),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("psycho-x"))
         ),
 
         new Patron(
             "Uncle Jim",
+            new Taste(),
             new Dialogue(),
             new PatronSprite(0.3, Assets.spritesheet("jim"))
         ),
 
         new Patron(
             "Mr. W",
+            new Taste(),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("mrw"))
         ),
 
         new Patron(
             "Donny",
+            new Taste(),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("donny"))
         ),
