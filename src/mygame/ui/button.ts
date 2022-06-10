@@ -166,7 +166,8 @@ export class IngredientButtons extends Container implements IUpdateable {
         let endIndex = startIndex + this.pageLength
         let lastIndexOfArray = this.allIngredientButtons.length - 1
 
-        if (endIndex >= lastIndexOfArray) {
+        // last page special case
+        if (endIndex > lastIndexOfArray) {
             endIndex = lastIndexOfArray + 1
         }
 
@@ -186,7 +187,7 @@ export class IngredientButtons extends Container implements IUpdateable {
         let startIndex = this.currentPage * this.pageLength
         let endIndex = startIndex + this.pageLength
         let isLastPage = false
-        if (endIndex >= lastIndexOfArray) {
+        if (endIndex > lastIndexOfArray) {
             isLastPage = true
         }
 

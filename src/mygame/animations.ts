@@ -4,7 +4,7 @@ import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
 import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween, DynamicTween, Tweenable, TweenablePoint, ITween } from './data/tween';
 import { createDropParticle, DropParticle } from './drop-particle';
-import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera, dialogueBox } from './main';
+import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera, dialogueBox, prop_gift, addIngredientToInventory } from './main';
 import { Opinion } from "./ui/patron-sprite";
 
 export const animationTween = new TweenChain()
@@ -137,6 +137,23 @@ export function animate_mixAndServe() {
                 patron.hasEnjoyedDrink = true
                 return patron.dialogue.like
             })
+
+            if (prop_patron.getPatron().hasGift) {
+                let gift = Ingredient.All[prop_patron.getPatron().giftIndex]
+
+                reactionTween.add(new CallbackTween(() => {
+                    prop_gift.appear(gift.texture())
+                }))
+
+                reactionTween.add(new Tween(prop_gift.tweenablePosition, prop_gift.deployedPosition, 0.15, EaseFunctions.quadFastSlow))
+                reactionTween.add(new WaitSecondsTween(1))
+                reactionTween.add(new Tween(prop_hand.tweenablePosition, prop_gift.position, 0.5, EaseFunctions.quadFastSlow))
+                reactionTween.add(new CallbackTween(() => {
+                    prop_gift.vanish()
+                    addIngredientToInventory(gift)
+                }))
+                reactionTween.add(new Tween(prop_hand.tweenablePosition, prop_hand.restingPosition, 0.5, EaseFunctions.quadSlowFast))
+            }
         }
 
         if (opinion == Opinion.Neutral) {

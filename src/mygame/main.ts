@@ -21,11 +21,14 @@ import { Reaction } from "./data/reaction";
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
 export let prop_patron: PatronHolder;
+export let prop_gift: Gift;
 export let updateables: IUpdateable[] = [];
 export let camera: Camera;
 export const currentMixture = new Mixture(3)
 export let allPatrons: Patron[]
 export let dialogueBox: DialogueBox
+
+let ingredientButtons: IngredientButtons
 
 export interface IUpdateable {
     update(dt: number): void;
@@ -130,7 +133,7 @@ export function main() {
                     return [`Ooh, not as ${reaction.missingFlavorNames()[0]} as I'd like...`, `But the ${reaction.likedFlavorNames().join(" and ")} ${reaction.likedFlavorNames().length > 1 ? "are" : "is"} spot on!`]
                 },
                 (reaction) => {
-                    return ["(cough)", `I don't like ${reaction.dislikedFlavorNames()[0]}.`, "Maybe you forgot, that's alright.", "I'm sure I'm not your only Uncle."]
+                    return ["(cough)", `I don't like ${reaction.dislikedFlavorNames()[0]} things.`, "Maybe you forgot, that's alright.", "I'm sure I'm not your only Uncle."]
                 }
             ),
             new PatronSprite(0.3, Assets.spritesheet("jim")),
@@ -275,6 +278,9 @@ export function main() {
     prop_mixer = new Mixer(new Point(origin.x, origin.y + 10))
     game.world.addChild(prop_mixer)
 
+    prop_gift = new Gift(addPoints(origin, new Point(0, 50)))
+    game.world.addChild(prop_gift)
+
     prop_hand = new Hand();
     prop_hand.anchor.set(0.5, 0.5)
     game.world.addChild(prop_hand)
@@ -302,13 +308,14 @@ export function main() {
 
     updateables.push(dialogueBox)
 
-    let ingredientButtons = new IngredientButtons(tooltip, currentMixture);
+    ingredientButtons = new IngredientButtons(tooltip, currentMixture);
     ingredientButtons.y = 464
     mainGameUi.addChild(ingredientButtons)
 
-    for (let ingredient of Ingredient.All) {
-        ingredientButtons.addIngredientButton(ingredient)
-    }
+    addIngredientToInventory(Ingredient.All[0])
+    addIngredientToInventory(Ingredient.All[1])
+    addIngredientToInventory(Ingredient.All[5])
+    addIngredientToInventory(Ingredient.All[6])
 
     let serveButtons = mainGameUi.addChild(new Container())
     serveButtons.visible = false
@@ -541,6 +548,32 @@ export class Camera {
     }
 }
 
+export class Gift extends Sprite {
+    readonly tweenablePosition: TweenablePoint
+    readonly deployedPosition: Point;
+
+    constructor(deployedPosition: Point) {
+        super(null)
+        this.anchor.set(0.5, 0.5)
+        this.tweenablePosition = new TweenablePoint(() => this.position, v => this.position = v)
+        this.deployedPosition = deployedPosition
+    }
+
+    appear(texture: Texture) {
+        this.texture = texture
+        this.visible = true
+        this.position = addPoints(prop_patron.position.clone(), new Point(0, -100))
+    }
+
+    vanish() {
+        this.visible = false
+    }
+}
+
 export function addPoints(left: Point, right: Point) {
     return new Point(left.x + right.x, left.y + right.y)
+}
+
+export function addIngredientToInventory(ingredient: Ingredient) {
+    ingredientButtons.addIngredientButton(ingredient)
 }

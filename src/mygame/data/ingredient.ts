@@ -5,20 +5,20 @@ import { Flavor, FlavorProfile } from './flavor';
 export class Ingredient {
     readonly name: string;
     readonly description: string;
-    readonly index: number;
+    readonly spriteIndex: number;
     readonly flavorProfile: FlavorProfile;
     readonly color: number;
 
     constructor(index: number, name: string, description: string, color: number, flavorProfile: FlavorProfile) {
         this.name = name;
-        this.index = index;
+        this.spriteIndex = index;
         this.color = color;
         this.description = description || defaultDescription(flavorProfile)
         this.flavorProfile = flavorProfile;
     }
 
     texture(): Texture {
-        return Assets.spritesheet("ingredients").textures[this.index];
+        return Assets.spritesheet("ingredients").textures[this.spriteIndex];
     }
 
     public static readonly All = [
