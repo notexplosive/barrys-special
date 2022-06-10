@@ -17,6 +17,8 @@ export class Flavor {
     static readonly Bitter = new Flavor("Bitter")
     static readonly Gross = new Flavor("Gross")
     static readonly Mushy = new Flavor("Mushy")
+    static readonly Hairy = new Flavor("Hairy")
+    static readonly Energizing = new Flavor("Energizing")
 }
 
 type FlavorProfileData = Map<Flavor, number>

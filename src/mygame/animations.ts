@@ -116,24 +116,36 @@ export function animate_mixAndServe() {
     animationTween.add(new Tween(prop_mixer.tweenableRotation, 0, 0.25, EaseFunctions.quadFastSlow))
     animationTween.add(new WaitSecondsTween(0.25))
 
-    let reaction = new TweenChain();
+    let reactionTween = new TweenChain();
     animationTween.add(new CallbackTween(() => {
-        let opinion = prop_patron.getPatron().patronSprite.getOpinion(currentMixture)
+        let reaction = prop_patron.getPatron().taste.getReactionToProfile(currentMixture.flavorProfile())
+        let opinion = Opinion.Neutral
+
+        if (reaction.dislikedFlavorCount() > 0) {
+            opinion = Opinion.Dislike
+        }
+
+        if (reaction.likedFlavorCount() >= 3) {
+            opinion = Opinion.Like
+        }
 
         prop_patron.getPatron().patronSprite.showOpinion(opinion)
 
         if (opinion == Opinion.Like) {
-            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -25)), 0.15, EaseFunctions.quadFastSlow))
-            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 0)), 0.15, EaseFunctions.quadSlowFast))
+            reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -25)), 0.15, EaseFunctions.quadFastSlow))
+            reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 0)), 0.15, EaseFunctions.quadSlowFast))
+            // enjoyed dialogue
         }
         if (opinion == Opinion.Neutral) {
-            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -10)), 0.5, EaseFunctions.quadFastSlow))
+            reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -10)), 0.5, EaseFunctions.quadFastSlow))
+            // dialogue about missing flavors
         }
         if (opinion == Opinion.Dislike) {
-            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 25)), 0.5, EaseFunctions.quadFastSlow))
+            reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 25)), 0.5, EaseFunctions.quadFastSlow))
+            // dialogue about hated flavors
         }
     }))
-    animationTween.add(reaction)
+    animationTween.add(reactionTween)
 
 
     // grab empty glass back

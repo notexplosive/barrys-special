@@ -1,6 +1,7 @@
 import { Sprite, Spritesheet, Texture } from "pixi.js";
 import { Assets } from "../../limbo/core/assets";
 import { Mixture } from "../data/mixture";
+import { Reaction } from "../data/reaction";
 
 export enum Opinion {
     Dislike = 1,
@@ -35,10 +36,5 @@ export class PatronSprite extends Sprite {
 
     showOpinion(opinion: Opinion) {
         this.texture = this.spriteSheet[opinion]
-    }
-
-    getOpinion(mixture: Mixture) {
-        console.log("getting opinion on", mixture)
-        return Opinion.Neutral
     }
 }

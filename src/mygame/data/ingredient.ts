@@ -23,15 +23,6 @@ export class Ingredient {
 
     public static readonly All = [
         new Ingredient(
-            0,
-            "Fresh Autumn Leaf",
-            null,
-            0xf3bc2e,
-            new FlavorProfile()
-                .set(Flavor.Crisp, 1)
-                .set(Flavor.Earthy, 1)
-        ),
-        new Ingredient(
             1,
             "Wonderberry",
             null,
@@ -42,16 +33,6 @@ export class Ingredient {
                 .set(Flavor.Mushy, 1)
         ),
         new Ingredient(
-            2,
-            "Hair of the 'Hog'",
-            null,
-            0x0000ff,
-            new FlavorProfile()
-                .set(Flavor.Dizzy, 1)
-                .set(Flavor.Gross, 1)
-                .set(Flavor.Bitter, 1)
-        ),
-        new Ingredient(
             3,
             "Copy Bean",
             null,
@@ -59,6 +40,7 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Earthy, 1)
                 .set(Flavor.Bitter, 1)
+                .set(Flavor.Energizing, 1)
         ),
         new Ingredient(
             4,
@@ -66,16 +48,6 @@ export class Ingredient {
             "Full of Arkane Majicks and not much else",
             0x20d6c7,
             new FlavorProfile()
-                .set(Flavor.Majickal, 1)
-        ),
-        new Ingredient(
-            5,
-            "Whirlroot",
-            null,
-            0x793a80,
-            new FlavorProfile()
-                .set(Flavor.Earthy, 1)
-                .set(Flavor.Dizzy, 1)
                 .set(Flavor.Majickal, 1)
         ),
         new Ingredient(
@@ -107,15 +79,6 @@ export class Ingredient {
                 .set(Flavor.Mushy, 1)
         ),
         new Ingredient(
-            9,
-            "Rock Salt",
-            null,
-            0xb3b3b3,
-            new FlavorProfile()
-                .set(Flavor.Salty, 1)
-                .set(Flavor.Crisp, 1)
-        ),
-        new Ingredient(
             10,
             "Wobby Booger",
             null,
@@ -142,15 +105,6 @@ export class Ingredient {
                 .set(Flavor.Oily, 1)
                 .set(Flavor.Toxic, 1)
         ),
-        // new Ingredient(
-        //     13,
-        //     "Happynut",
-        //     "Sweet and Crisp nut that smiles back",
-        //     0x422433,
-        //     new FlavorProfile()
-        //         .set(Flavor.Crisp, 1)
-        //         .set(Flavor.Sweet, 1)
-        // ),
         new Ingredient(
             14,
             "Funny Herb",

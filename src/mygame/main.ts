@@ -34,7 +34,7 @@ export function main() {
             "Beep",
             new Taste()
                 .addLike(Flavor.Oily).addLike(Flavor.Bitter).addLike(Flavor.Salty)
-                .addHate(Flavor.Sweet).addHate(Flavor.Earthy).addHate(Flavor.Mushy),
+                .addHate(Flavor.Sweet).addHate(Flavor.Mushy),
             new Dialogue(),
             new PatronSprite(0.25, Assets.spritesheet("beep"))
         ),
@@ -42,8 +42,8 @@ export function main() {
         new Patron(
             "Zap",
             new Taste()
-                .addLike(Flavor.Majickal).addLike(Flavor.Earthy).addLike(Flavor.Funny)
-                .addHate(Flavor.Toxic).addHate(Flavor.Dizzy),
+                .addLike(Flavor.Majickal).addLike(Flavor.Crisp).addLike(Flavor.Funny)
+                .addHate(Flavor.Dizzy),
             new Dialogue(),
             new PatronSprite(0.3, Assets.spritesheet("zap"))
         ),
@@ -79,8 +79,8 @@ export function main() {
         new Patron(
             "Uncle Jim",
             new Taste()
-                .addLike(Flavor.Funny).addLike(Flavor.Dizzy).addLike(Flavor.Bitter)
-                .addHate(Flavor.Toxic).addHate(Flavor.Crisp).addHate(Flavor.Gross).addHate(Flavor.Majickal).addHate(Flavor.Sweet),
+                .addLike(Flavor.Funny).addLike(Flavor.Energizing).addLike(Flavor.Bitter)
+                .addHate(Flavor.Mushy).addHate(Flavor.Sweet).addHate(Flavor.Hairy),
             new Dialogue(),
             new PatronSprite(0.3, Assets.spritesheet("jim"))
         ),
@@ -89,7 +89,7 @@ export function main() {
             "Mr. W",
             new Taste()
                 .addLike(Flavor.Salty).addLike(Flavor.Sweet).addLike(Flavor.Oily)
-                .addHate(Flavor.Toxic).addHate(Flavor.Majickal).addHate(Flavor.Crisp).addHate(Flavor.Dizzy),
+                .addHate(Flavor.Toxic).addHate(Flavor.Dizzy),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("mrw"))
         ),
@@ -97,8 +97,8 @@ export function main() {
         new Patron(
             "Donny",
             new Taste()
-                .addLike(Flavor.Gross).addLike(Flavor.Dizzy).addLike(Flavor.Funny)
-                .addHate(Flavor.Bitter).addHate(Flavor.Sweet).addHate(Flavor.Mushy),
+                .addLike(Flavor.Gross).addLike(Flavor.Oily).addLike(Flavor.Funny)
+                .addHate(Flavor.Sweet).addHate(Flavor.Mushy).addHate(Flavor.Hairy),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("donny"))
         ),
