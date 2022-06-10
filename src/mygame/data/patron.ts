@@ -8,6 +8,8 @@ export class Patron {
     readonly dialogue: Dialogue;
     readonly patronSprite: PatronSprite;
     readonly taste: Taste;
+    hasBeenIntroduced: boolean;
+    hasEnjoyedDrink: boolean;
 
     constructor(name: string, taste: Taste, dialogue: Dialogue, patronSprite: PatronSprite) {
         this.name = name

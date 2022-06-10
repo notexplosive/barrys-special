@@ -14,7 +14,7 @@ export class DialogueBox extends Container implements IUpdateable {
     constructor() {
         super()
         this.renderedContent = new Text("",
-            { fontFamily: "Concert One", fill: ['#ffffff'], stroke: 0x000000, strokeThickness: 4, fontSize: 35 })
+            { fontFamily: "Concert One", fill: ['#ffffff'], stroke: 0x000000, strokeThickness: 4, fontSize: 35, wordWrapWidth: 700, wordWrap: true, align: "center" })
         this.renderedContent.anchor.set(0.5, 0)
         this.addChild(this.renderedContent)
         this.currentTween = null
@@ -41,7 +41,7 @@ export class DialogueBox extends Container implements IUpdateable {
     }
 
     update(dt: number): void {
-        if (this.currentTween != null) {
+        if (this.currentTween != null && !this.isDone()) {
             game.requestInteractive()
             game.requestButtonModeTrue()
 

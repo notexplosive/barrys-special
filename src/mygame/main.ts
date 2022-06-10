@@ -16,6 +16,7 @@ import { Dialogue } from "./data/dialogue";
 import { Taste } from "./data/taste";
 import { Flavor } from "./data/flavor";
 import { DialogueBox } from "./ui/dialogue-box";
+import { Reaction } from "./data/reaction";
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
@@ -37,7 +38,18 @@ export function main() {
             new Taste()
                 .addLike(Flavor.Oily).addLike(Flavor.Bitter).addLike(Flavor.Salty)
                 .addHate(Flavor.Sweet).addHate(Flavor.Mushy),
-            new Dialogue(),
+            new Dialogue(
+                ["Hey Barry!", "Zap and I are out looking for Giant Robot Parts.", "I figured I'd make a quick stop to see what the special is."],
+                ["I'm back!", "No Giant Robot Parts today but it was still a pretty fun day."],
+                ["Woah!!", "This amazing!", "I love it!!", "...", "Oh! I just remembered...", "We stole this from Psycho-X's lab.", "Can you hold onto it for safe keeping?", "My ride's here, gotta go, bye!"],
+                ["Tastes like...", "Nothing??", "I think I don't have the right taste modules for this."],
+                (reaction) => {
+                    return [`That's pretty good! I like that it's ${reaction.likedFlavorNames().join(" and ")}.`, "I think it's missing something...", `Maybe add something ${reaction.missingFlavorNames()[0]}?`]
+                },
+                (reaction) => {
+                    return ["Thanks I hate it!!!", `I hate ${reaction.dislikedFlavorNames()[0]} things, they mess up my circuits.`]
+                }
+            ),
             new PatronSprite(0.25, Assets.spritesheet("beep"))
         ),
 
@@ -46,26 +58,37 @@ export function main() {
             new Taste()
                 .addLike(Flavor.Majickal).addLike(Flavor.Crisp).addLike(Flavor.Funny)
                 .addHate(Flavor.Dizzy),
-            new Dialogue(),
+            new Dialogue(
+                ["I'm following Beep around, as usual.", "I'll have the special, preferably something that restore Majick."],
+                ["My mana is low...", "I could really use something to replenish my Majicks."],
+                ["Ahh... fully restored!", "Thanks Barry! You're the best!"],
+                ["That potion is... a dud."],
+                (reaction) => {
+                    return [`Hmm... It tastes ${reaction.likedFlavorNames().join(" and ")}, which I like.`, `Needs more... ${reaction.missingFlavorNames()[0]}...`]
+                },
+                (reaction) => {
+                    return ["Nnggnhnhh", `The ${reaction.dislikedFlavorNames()[0]} flavor isn't sitting well with me.`, "Gotta go..."]
+                }
+            ),
             new PatronSprite(0.3, Assets.spritesheet("zap"))
         ),
 
         new Patron(
             "Skrbaogrk",
-            new Taste()
-                .addLike(Flavor.Funny)
-                .addLike(Flavor.Crisp)
-                .addLike(Flavor.Sweet)
-                .addLike(Flavor.Earthy)
-                .addLike(Flavor.Majickal)
-                .addLike(Flavor.Salty)
-                .addLike(Flavor.Oily)
-                .addLike(Flavor.Dizzy)
-                .addLike(Flavor.Toxic)
-                .addLike(Flavor.Bitter)
-                .addLike(Flavor.Gross)
+            new Taste().enableEatsAnything()
             ,
-            new Dialogue(),
+            new Dialogue(
+                ["(A horrifying creature approaches the bar)", "(You're not sure what it wants)", "(Your feel a cold sweat)", "(You look down to the bar and start preparing a drink)"],
+                ["(It's back, and so is that metallic taste in your mouth)"],
+                ["(It... seems satisfied?)", "(It left something on the table)", "(Is it an offering?)"],
+                ["(It didn't seem to care for that.)"],
+                (reaction) => {
+                    return ["(It looks unsatisfied)"]
+                },
+                (reaction) => {
+                    return ["(It didn't seem to like that)"]
+                }
+            ),
             new PatronSprite(0.5, Assets.spritesheet("creature"))
         ),
 
@@ -74,7 +97,18 @@ export function main() {
             new Taste()
                 .addLike(Flavor.Toxic)
                 .addHate(Flavor.Oily),
-            new Dialogue(),
+            new Dialogue(
+                ["Good evening...", "I'm trying to craft the perfect poison...", "Think you can help me out?"],
+                ["Mmyes... I have returned.", "Maybe you've found something sufficiently...", "Mmmm-deadly?"],
+                ["Mmmmhmm... yes... This will do nicely.", "Meheheheheehhehhh", "Take this as a reward", "I found it in Uncle Jim's secret garden."],
+                ["Is this a saline solution?", "I taste nothing!"],
+                (reaction) => {
+                    return ["Intriguing...", `I'm looking for something more...`, `${reaction.missingFlavorNames()[0]}...`]
+                },
+                (reaction) => {
+                    return ["Agh!", "I almost enjoyed that. It's terrible!", `Did I taste ${reaction.dislikedFlavorNames()[0]}?!`, "That's all wrong!"]
+                }
+            ),
             new PatronSprite(0.4, Assets.spritesheet("psycho-x"))
         ),
 
@@ -83,7 +117,18 @@ export function main() {
             new Taste()
                 .addLike(Flavor.Funny).addLike(Flavor.Energizing).addLike(Flavor.Bitter)
                 .addHate(Flavor.Mushy).addHate(Flavor.Sweet).addHate(Flavor.Hairy),
-            new Dialogue(),
+            new Dialogue(
+                ["Hey there nephew.", "It's me, you're Uncle Jim!", "I'll take whatever you got."],
+                ["How's my favorite nephew?", "I'm looking for a little pick-me-up."],
+                ["Woahh! That's good stuff!", "Here, my new girlfriend gave me this and uh... I don't want it."],
+                ["Huh...", "I didn't particularly like or dislike any of that."],
+                (reaction) => {
+                    return [`Ooh, not as ${reaction.missingFlavorNames()[0]} as I'd like...`, `But the ${reaction.likedFlavorNames().join(" and ")} ${reaction.likedFlavorNames().length > 1 ? "are" : "is"} spot on!`]
+                },
+                (reaction) => {
+                    return ["(cough)", `I don't like ${reaction.dislikedFlavorNames()[0]}.`, "Maybe you forgot, that's alright.", "I'm sure I'm not your only Uncle."]
+                }
+            ),
             new PatronSprite(0.3, Assets.spritesheet("jim"))
         ),
 
@@ -92,7 +137,18 @@ export function main() {
             new Taste()
                 .addLike(Flavor.Salty).addLike(Flavor.Sweet).addLike(Flavor.Oily)
                 .addHate(Flavor.Toxic).addHate(Flavor.Dizzy),
-            new Dialogue(),
+            new Dialogue(
+                ["(A very normal looking person approaches the bar)", "(He nods at you expectently)"],
+                ["(The very normal looking person nods at you)"],
+                ["(The very normal looking person looks pleased)", "(His torso sneezes onto the bar)", "(You collect the offering)"],
+                ["(He doesn't seem impressed)"],
+                (reaction) => {
+                    return ["(He looks perplexed)", `(Looks like he enjoyed the ${reaction.likedFlavorNames().join(" and ")} taste)`, `(... but he wanted something ${reaction.missingFlavorNames()[0]} too)`]
+                },
+                (reaction) => {
+                    return [`(He looks upset.)`, `(You assume he doesn't like ${reaction.dislikedFlavorNames()[0]})`]
+                }
+            ),
             new PatronSprite(0.4, Assets.spritesheet("mrw"))
         ),
 
@@ -101,7 +157,18 @@ export function main() {
             new Taste()
                 .addLike(Flavor.Gross).addLike(Flavor.Oily).addLike(Flavor.Funny)
                 .addHate(Flavor.Sweet).addHate(Flavor.Mushy).addHate(Flavor.Hairy),
-            new Dialogue(),
+            new Dialogue(
+                ["Hhhhey there.", "Look... there's no easy way to put this.", "Uhh..", "This is a robbery!", "Gimme all your cash!", "Oh you don't have any cash?", "Just drinks?", "Well uh... gimme a drink!"],
+                ["Stick 'em up this is a--", "Oh wait I remember you."],
+                ["Look...", "This is without a doubt.", "The worst robbery I've ever taken part in.", "But that last drink was pretty tasty", "So I'm gonna share something with you.", "It's my illegal dragon tooth collection.", "If anyone asks you, you didn't get them from me.", "Anyway, gotta run!"],
+                ["Eh... kinda bland."],
+                (reaction) => {
+                    return [`Oo! It's got ${reaction.likedFlavorNames().join(" and ")}. That's good!`, `Got anything ${reaction.missingFlavorNames()[0]}?`, "That's what this needs!"]
+                },
+                (reaction) => {
+                    return ["Yuck!", `Why would I want to drink something ${reaction.dislikedFlavorNames()[0]}?`, "Gotta run!"]
+                }
+            ),
             new PatronSprite(0.4, Assets.spritesheet("donny"))
         ),
     ]
@@ -149,6 +216,19 @@ export function main() {
             if (!enjoyedIngredients.includes(ingredient)) {
                 console.log("🟠🟠🟠", ingredient.name, "Is not enjoyed by anyone")
             }
+        }
+
+        for (let patron of allPatrons) {
+            console.log(patron.name)
+            console.log(
+                "\n[[ Intro ]]\n", patron.dialogue.introPage.join("\n"),
+                "\n[[ Bland ]]\n", patron.dialogue.bland.join("\n"),
+                "\n[[ Return ]]\n", patron.dialogue.returnPage.join("\n"),
+                "\n[[ Like ]]\n", patron.dialogue.like.join("\n"),
+                "\n[[ Missing something (has 1 good thing) ]]\n", patron.dialogue.missingSomething(new Reaction([Flavor.Bitter], [], [Flavor.Energizing, Flavor.Crisp])).join("\n"),
+                "\n[[ Missing something (has 2 good thing) ]]\n", patron.dialogue.missingSomething(new Reaction([Flavor.Bitter, Flavor.Funny], [], [Flavor.Energizing, Flavor.Crisp])).join("\n"),
+                "\n[[ Dislike ]]\n", patron.dialogue.dislike(new Reaction([], [Flavor.Toxic, Flavor.Gross], [])).join("\n"),
+            )
         }
     }
 
@@ -202,7 +282,7 @@ export function main() {
     mainGameUi.addChild(tooltip);
 
     dialogueBox = new DialogueBox()
-    dialogueBox.position.set(origin.x, 60)
+    dialogueBox.position.set(origin.x, 400)
     game.rootContainer.addChild(dialogueBox)
 
     updateables.push(dialogueBox)
@@ -408,10 +488,28 @@ export class PatronHolder extends Container {
         return this.patron
     }
 
-    rotatePatron() {
+    rotatePatron(): boolean {
         this.patronIndex++;
         this.patronIndex %= allPatrons.length
+
+        // Skip over patrons that have already enjoyed their drink
+        if (allPatrons[this.patronIndex].hasEnjoyedDrink) {
+            let isGameOver = true
+            for (let patron of allPatrons) {
+                if (!patron.hasEnjoyedDrink) {
+                    isGameOver = false
+                }
+            }
+
+            if (isGameOver) {
+                return true
+            }
+
+            return this.rotatePatron()
+        }
+
         this.setPatron(allPatrons[this.patronIndex])
+        return false
     }
 }
 

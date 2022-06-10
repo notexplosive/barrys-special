@@ -3,6 +3,7 @@ import { Flavor, FlavorProfile } from './flavor';
 import { Reaction } from "./reaction";
 
 export class Taste {
+    eatsAnything: boolean = false
     private opinions: Map<Flavor, Opinion> = new Map();
 
 
@@ -30,6 +31,10 @@ export class Taste {
         let liked = []
 
         const presentFlavors = flavorProfile.allNonZeroFlavors()
+
+        if (this.eatsAnything) {
+            return new Reaction(presentFlavors, [], [])
+        }
 
         for (let flavor of this.opinions.keys()) {
             if (this.opinions.get(flavor) == Opinion.Like) {
@@ -59,5 +64,10 @@ export class Taste {
         }
 
         return likes.map((flavor) => flavor.name)
+    }
+
+    enableEatsAnything(): Taste {
+        this.eatsAnything = true
+        return this
     }
 }

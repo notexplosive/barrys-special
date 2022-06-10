@@ -123,9 +123,7 @@ export function animate_mixAndServe() {
 
         if (reaction.dislikedFlavorCount() > 0) {
             opinion = Opinion.Dislike
-        }
-
-        if (reaction.likedFlavorCount() >= 3) {
+        } else if (reaction.likedFlavorCount() > 0 && reaction.missingFlavorCount() == 0 || prop_patron.getPatron().taste.eatsAnything) {
             opinion = Opinion.Like
         }
 
@@ -134,16 +132,29 @@ export function animate_mixAndServe() {
         if (opinion == Opinion.Like) {
             reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -25)), 0.15, EaseFunctions.quadFastSlow))
             reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 0)), 0.15, EaseFunctions.quadSlowFast))
-            // enjoyed dialogue
+            animate_showDialogue(reactionTween, () => {
+                let patron = prop_patron.getPatron()
+                patron.hasEnjoyedDrink = true
+                return patron.dialogue.like
+            })
         }
+
         if (opinion == Opinion.Neutral) {
             reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -10)), 0.5, EaseFunctions.quadFastSlow))
-            // dialogue about missing flavors
+
+            if (reaction.likedFlavorCount() > 0) {
+                animate_showDialogue(reactionTween, () => prop_patron.getPatron().dialogue.missingSomething(reaction))
+            } else {
+                animate_showDialogue(reactionTween, () => prop_patron.getPatron().dialogue.bland)
+            }
         }
+
         if (opinion == Opinion.Dislike) {
             reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 25)), 0.5, EaseFunctions.quadFastSlow))
-            // dialogue about hated flavors
+            animate_showDialogue(reactionTween, () => prop_patron.getPatron().dialogue.dislike(reaction))
         }
+
+        reactionTween.add(new WaitSecondsTween(0.25))
     }))
     animationTween.add(reactionTween)
 
@@ -166,11 +177,15 @@ export function animate_mixAndServe() {
     animate_patronLeaves()
 
     animationTween.add(new CallbackTween(() => {
-        prop_patron.rotatePatron()
-    }))
+        let isGameOver = prop_patron.rotatePatron()
 
-    animate_patronEnters()
-    animate_spawnMixer()
+        if (isGameOver) {
+            console.log("The end!!")
+        } else {
+            animate_patronEnters()
+            animate_spawnMixer()
+        }
+    }))
 }
 
 export function animate_putOnLid() {
@@ -232,8 +247,16 @@ export function animate_patronEnters() {
     animationTween.add(new Tween(prop_patron.tweenablePosition, prop_patron.restingPosition, 0.25, EaseFunctions.quadSlowFast))
 
     animationTween.add(new WaitSecondsTween(1))
-    animationTween.add(new CallbackTween(() => { dialogueBox.loadPages(["Hey Barry", "Long time no see", "How have you been?"]) }))
-    animationTween.add(new WaitUntilTween(() => dialogueBox.isDone()))
+    animate_showDialogue(animationTween, () => {
+        let patron = prop_patron.getPatron()
+
+        if (patron.hasBeenIntroduced) {
+            return patron.dialogue.returnPage
+        } else {
+            patron.hasBeenIntroduced = true
+            return patron.dialogue.introPage
+        }
+    })
 
     animationTween.add(new Tween(camera.tweenablePosition, camera.restingPosition, 0.5, EaseFunctions.quadSlowFastSlow))
 
@@ -266,4 +289,11 @@ export function animate_patronLeaves() {
                     .add(new Tween(prop_patron.tweenableRotation, 0, 0.25, EaseFunctions.linear))
             )
     )
+}
+
+function animate_showDialogue(chain: TweenChain, getPage: () => string[]) {
+    chain.add(new CallbackTween(() => {
+        dialogueBox.loadPages(getPage())
+    }))
+    chain.add(new WaitUntilTween(() => dialogueBox.isDone()))
 }
