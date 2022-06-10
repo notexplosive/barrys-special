@@ -53,6 +53,12 @@ export function main() {
         ),
 
         new Patron(
+            "Uncle Jim",
+            new Dialogue(),
+            new PatronSprite(0.3, Assets.spritesheet("jim"))
+        ),
+
+        new Patron(
             "Mr. W",
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("mrw"))

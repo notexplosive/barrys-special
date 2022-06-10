@@ -1,5 +1,6 @@
 import { Ingredient } from './ingredient';
 import { FlavorProfile, Flavor, mixFlavorProfiles } from './flavor';
+import { Color } from './color';
 
 export class Mixture {
     private readonly currentIngredients: Ingredient[] = []
@@ -50,6 +51,17 @@ export class Mixture {
     }
 
     color(): number {
-        return 0xff0000
+        let red = 0
+        let green = 0
+        let blue = 0
+        this.currentIngredients.map((ingredient) => {
+            let extractedColor = Color.fromHex(ingredient.color)
+            red += extractedColor.red
+            green += extractedColor.green
+            blue += extractedColor.blue
+        })
+
+        const length = this.currentIngredients.length
+        return Color.fromRgb255(red / length, green / length, blue / length).asHex()
     }
 }

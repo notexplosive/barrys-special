@@ -1,6 +1,7 @@
 import { Ingredient } from '../src/mygame/data/ingredient';
 import { FlavorProfile, Flavor, mixFlavorProfiles } from '../src/mygame/data/flavor';
 import { Mixture } from '../src/mygame/data/mixture';
+import { Color } from '../src/mygame/data/color';
 
 describe("flavor", () => {
 
@@ -55,13 +56,31 @@ describe("flavor", () => {
 describe("mixtures", () => {
     test("behaves properly", () => {
         let mixture = new Mixture()
-        let ingredient1 = new Ingredient(0, "Test 1", new FlavorProfile().set(Flavor.Chemically, 2).set(Flavor.Gross, -1))
-        let ingredient2 = new Ingredient(0, "Test 2", new FlavorProfile().set(Flavor.Frosty, 1).set(Flavor.Chemically, -1))
+        let ingredient1 = new Ingredient(0, "Test 1", 0xffffff, new FlavorProfile().set(Flavor.Chemically, 2).set(Flavor.Gross, -1))
+        let ingredient2 = new Ingredient(0, "Test 2", 0xffffff, new FlavorProfile().set(Flavor.Frosty, 1).set(Flavor.Chemically, -1))
         mixture.addIngredient(ingredient1)
         mixture.addIngredient(ingredient2)
 
         expect(mixture.flavorProfile().get(Flavor.Chemically)).toBe(1)
         expect(mixture.flavorProfile().get(Flavor.Gross)).toBe(-1)
         expect(mixture.flavorProfile().get(Flavor.Frosty)).toBe(1)
+    })
+
+    test("color with 1 ingredients", () => {
+        let mixture = new Mixture()
+        let ingredient1 = new Ingredient(0, "Test 1", 0xabcabc, new FlavorProfile().set(Flavor.Chemically, 2).set(Flavor.Gross, -1))
+        mixture.addIngredient(ingredient1)
+
+        expect(mixture.color()).toBe(0xabcabc)
+    })
+
+    test("color with 2 ingredients", () => {
+        let mixture = new Mixture()
+        let ingredient1 = new Ingredient(0, "Test 1", 0x202200, new FlavorProfile().set(Flavor.Chemically, 2).set(Flavor.Gross, -1))
+        let ingredient2 = new Ingredient(0, "Test 2", 0x402266, new FlavorProfile().set(Flavor.Frosty, 1).set(Flavor.Chemically, -1))
+        mixture.addIngredient(ingredient1)
+        mixture.addIngredient(ingredient2)
+
+        expect(mixture.color()).toBe(0x302233)
     })
 })
