@@ -315,7 +315,7 @@ export function main() {
     addIngredientToInventory(Ingredient.All[0])
     addIngredientToInventory(Ingredient.All[1])
     addIngredientToInventory(Ingredient.All[5])
-    addIngredientToInventory(Ingredient.All[6])
+    addIngredientToInventory(Ingredient.All[7])
 
     let serveButtons = mainGameUi.addChild(new Container())
     serveButtons.visible = false
@@ -403,14 +403,14 @@ export class Mixer extends Container {
         const glassFill_1 = new Sprite(Assets.spritesheet("glass").textures[5]);
         glassFill_1.anchor.set(0.5, 0.5)
         glassFill_1.zIndex = 20
-        glassFill_1.alpha = 0.35
+        glassFill_1.alpha = 0.1
         glassFill_1.tint = 0xaaaaff
         this.glassPart.addChild(glassFill_1)
 
         const glassFill_2 = new Sprite(Assets.spritesheet("glass").textures[6]);
         glassFill_2.anchor.set(0.5, 0.5)
         glassFill_2.zIndex = 15
-        glassFill_2.alpha = 0.35
+        glassFill_2.alpha = 0.1
         glassFill_2.tint = 0xaaaaff
         this.glassPart.addChild(glassFill_2)
 

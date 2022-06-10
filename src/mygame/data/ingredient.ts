@@ -24,7 +24,7 @@ export class Ingredient {
     public static readonly All = [
         new Ingredient(
             1,
-            "Wonderberry",
+            "Veinberry",
             null,
             0x73172d,
             new FlavorProfile()
