@@ -50,7 +50,8 @@ export function main() {
                     return ["Thanks I hate it!!!", `I hate ${reaction.dislikedFlavorNames()[0]} things, they mess up my circuits.`]
                 }
             ),
-            new PatronSprite(0.25, Assets.spritesheet("beep"))
+            new PatronSprite(0.25, Assets.spritesheet("beep")),
+            3 // Chemical B
         ),
 
         new Patron(
@@ -70,7 +71,8 @@ export function main() {
                     return ["Nnggnhnhh", `The ${reaction.dislikedFlavorNames()[0]} flavor isn't sitting well with me.`, "Gotta go..."]
                 }
             ),
-            new PatronSprite(0.3, Assets.spritesheet("zap"))
+            new PatronSprite(0.3, Assets.spritesheet("zap")),
+            null
         ),
 
         new Patron(
@@ -89,7 +91,8 @@ export function main() {
                     return ["(It didn't seem to like that)"]
                 }
             ),
-            new PatronSprite(0.5, Assets.spritesheet("creature"))
+            new PatronSprite(0.5, Assets.spritesheet("creature")),
+            8 // motor oil
         ),
 
         new Patron(
@@ -109,7 +112,8 @@ export function main() {
                     return ["Agh!", "I almost enjoyed that. It's terrible!", `Did I taste ${reaction.dislikedFlavorNames()[0]}?!`, "That's all wrong!"]
                 }
             ),
-            new PatronSprite(0.4, Assets.spritesheet("psycho-x"))
+            new PatronSprite(0.4, Assets.spritesheet("psycho-x")),
+            9 // funny herb
         ),
 
         new Patron(
@@ -129,7 +133,8 @@ export function main() {
                     return ["(cough)", `I don't like ${reaction.dislikedFlavorNames()[0]}.`, "Maybe you forgot, that's alright.", "I'm sure I'm not your only Uncle."]
                 }
             ),
-            new PatronSprite(0.3, Assets.spritesheet("jim"))
+            new PatronSprite(0.3, Assets.spritesheet("jim")),
+            4
         ),
 
         new Patron(
@@ -149,7 +154,8 @@ export function main() {
                     return [`(He looks upset.)`, `(You assume he doesn't like ${reaction.dislikedFlavorNames()[0]})`]
                 }
             ),
-            new PatronSprite(0.4, Assets.spritesheet("mrw"))
+            new PatronSprite(0.4, Assets.spritesheet("mrw")),
+            6
         ),
 
         new Patron(
@@ -169,7 +175,8 @@ export function main() {
                     return ["Yuck!", `Why would I want to drink something ${reaction.dislikedFlavorNames()[0]}?`, "Gotta run!"]
                 }
             ),
-            new PatronSprite(0.4, Assets.spritesheet("donny"))
+            new PatronSprite(0.4, Assets.spritesheet("donny")),
+            2
         ),
     ]
 
@@ -229,6 +236,14 @@ export function main() {
                 "\n[[ Missing something (has 2 good thing) ]]\n", patron.dialogue.missingSomething(new Reaction([Flavor.Bitter, Flavor.Funny], [], [Flavor.Energizing, Flavor.Crisp])).join("\n"),
                 "\n[[ Dislike ]]\n", patron.dialogue.dislike(new Reaction([], [Flavor.Toxic, Flavor.Gross], [])).join("\n"),
             )
+        }
+
+        for (let patron of allPatrons) {
+            if (patron.hasGift) {
+                console.log(patron.name, "gifts", Ingredient.All[patron.giftIndex].name)
+            } else {
+                console.log(patron.name, "does not give a gift")
+            }
         }
     }
 
