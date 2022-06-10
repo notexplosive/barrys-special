@@ -39,15 +39,17 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Sweet, 1)
                 .set(Flavor.Bitter, 1)
+                .set(Flavor.Mushy, 1)
         ),
         new Ingredient(
             2,
             "Hair of the 'Hog'",
-            "Makes people Dizzy and tastes Gross",
+            null,
             0x0000ff,
             new FlavorProfile()
                 .set(Flavor.Dizzy, 1)
                 .set(Flavor.Gross, 1)
+                .set(Flavor.Bitter, 1)
         ),
         new Ingredient(
             3,
@@ -69,11 +71,12 @@ export class Ingredient {
         new Ingredient(
             5,
             "Whirlroot",
-            "Earthy and makes you Dizzy",
+            null,
             0x793a80,
             new FlavorProfile()
                 .set(Flavor.Earthy, 1)
                 .set(Flavor.Dizzy, 1)
+                .set(Flavor.Majickal, 1)
         ),
         new Ingredient(
             6,
@@ -91,15 +94,17 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Oily, 1)
                 .set(Flavor.Bitter, 1)
+                .set(Flavor.Mushy, 1)
         ),
         new Ingredient(
             8,
             "Lanky Mushroom",
-            "Make you feel Funny if you can handle the Gross taste",
+            null,
             0x23674e,
             new FlavorProfile()
                 .set(Flavor.Funny, 1)
                 .set(Flavor.Gross, 1)
+                .set(Flavor.Mushy, 1)
         ),
         new Ingredient(
             9,
@@ -135,25 +140,26 @@ export class Ingredient {
             0x000000,
             new FlavorProfile()
                 .set(Flavor.Oily, 1)
-                .set(Flavor.Gross, 1)
+                .set(Flavor.Toxic, 1)
         ),
-        new Ingredient(
-            13,
-            "Happynut",
-            "Sweet and Crisp nut that smiles back",
-            0x422433,
-            new FlavorProfile()
-                .set(Flavor.Crisp, 1)
-                .set(Flavor.Sweet, 1)
-        ),
+        // new Ingredient(
+        //     13,
+        //     "Happynut",
+        //     "Sweet and Crisp nut that smiles back",
+        //     0x422433,
+        //     new FlavorProfile()
+        //         .set(Flavor.Crisp, 1)
+        //         .set(Flavor.Sweet, 1)
+        // ),
         new Ingredient(
             14,
             "Funny Herb",
             null,
             0x1a7a3e,
             new FlavorProfile()
-                .set(Flavor.Funny, 2)
-                .set(Flavor.Gross, 1)
+                .set(Flavor.Funny, 1)
+                .set(Flavor.Dizzy, 1)
+                .set(Flavor.Earthy, 1)
         ),
     ]
 }

@@ -19,6 +19,7 @@ let app = new PIXI.Application({
 var isDevBuild = false;
 if (process.env.NODE_ENV !== "production") {
   console.log("💻🤖 DEVELOPMENT BUILD DETECTED 🤖💻");
+  isDevBuild = true
 }
 
 document.body.appendChild(app.view);

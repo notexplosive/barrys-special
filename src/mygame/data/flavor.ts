@@ -9,13 +9,14 @@ export class Flavor {
     static readonly Crisp = new Flavor("Crisp")
     static readonly Sweet = new Flavor("Sweet")
     static readonly Earthy = new Flavor("Earthy")
-    static readonly Majickal = new Flavor("Majickal")
+    static readonly Majickal = new Flavor("Arkane")
     static readonly Salty = new Flavor("Salty")
     static readonly Oily = new Flavor("Oily")
-    static readonly Dizzy = new Flavor("Dizzy")
+    static readonly Dizzy = new Flavor("Dizzying")
     static readonly Toxic = new Flavor("Toxic")
     static readonly Bitter = new Flavor("Bitter")
     static readonly Gross = new Flavor("Gross")
+    static readonly Mushy = new Flavor("Mushy")
 }
 
 type FlavorProfileData = Map<Flavor, number>

@@ -58,7 +58,7 @@ describe("flavor", () => {
 
 describe("mixtures", () => {
     test("behaves properly", () => {
-        let mixture = new Mixture()
+        let mixture = new Mixture(3)
         let ingredient1 = new Ingredient(0, "Test 1", "", 0xffffff, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Gross, -1))
         let ingredient2 = new Ingredient(0, "Test 2", "", 0xffffff, new FlavorProfile().set(Flavor.Majickal, 1).set(Flavor.Toxic, -1))
         mixture.addIngredient(ingredient1)
@@ -70,7 +70,7 @@ describe("mixtures", () => {
     })
 
     test("color with 1 ingredients", () => {
-        let mixture = new Mixture()
+        let mixture = new Mixture(3)
         let ingredient1 = new Ingredient(0, "Test 1", "", 0xabcabc, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Gross, -1))
         mixture.addIngredient(ingredient1)
 
@@ -78,7 +78,7 @@ describe("mixtures", () => {
     })
 
     test("color with 2 ingredients", () => {
-        let mixture = new Mixture()
+        let mixture = new Mixture(3)
         let ingredient1 = new Ingredient(0, "Test 1", "", 0x202200, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Gross, -1))
         let ingredient2 = new Ingredient(0, "Test 2", "", 0x402266, new FlavorProfile().set(Flavor.Majickal, 1).set(Flavor.Toxic, -1))
         mixture.addIngredient(ingredient1)
@@ -107,5 +107,17 @@ describe("taste", () => {
         expect(subject.getOpinionOnFlavor(Flavor.Sweet)).toBe(Opinion.Like)
         expect(subject.getOpinionOnFlavor(Flavor.Crisp)).toBe(Opinion.Neutral)
         expect(subject.getReactionToProfile(profile)).toMatchObject(new Reaction([Flavor.Gross, Flavor.Oily], [Flavor.Toxic], [Flavor.Sweet]))
+    })
+
+    test("enjoy thing correctly", () => {
+        let subject = new Taste()
+            .addHate(Flavor.Toxic)
+            .addLike(Flavor.Sweet)
+
+        let profile = new FlavorProfile()
+            .set(Flavor.Sweet, 1)
+
+        expect(subject.getReactionToProfile(profile))
+            .toMatchObject(new Reaction([Flavor.Sweet], [], []))
     })
 })

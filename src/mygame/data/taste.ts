@@ -41,10 +41,23 @@ export class Taste {
             }
 
             if (this.opinions.get(flavor) == Opinion.Dislike) {
-                disliked.push(flavor)
+                if (presentFlavors.includes(flavor)) {
+                    disliked.push(flavor)
+                }
             }
         }
 
         return new Reaction(liked, disliked, missing)
+    }
+
+    getLikesNames(): string[] {
+        let likes: Flavor[] = []
+        for (let flavor of this.opinions.keys()) {
+            if (this.opinions.get(flavor) == Opinion.Like) {
+                likes.push(flavor)
+            }
+        }
+
+        return likes.map((flavor) => flavor.name)
     }
 }

@@ -5,12 +5,14 @@ import { Color } from './color';
 export class Mixture {
     private readonly currentIngredients: Ingredient[] = []
     readonly onChangedCallback: Function[] = []
+    readonly capacity: number;
 
-    constructor() {
+    constructor(capacity: number) {
+        this.capacity = capacity
     }
 
     addIngredient(ingredient: Ingredient) {
-        if (this.currentIngredients.length < 3) {
+        if (this.currentIngredients.length < this.capacity) {
             this.currentIngredients.push(ingredient)
         }
 

@@ -14,13 +14,14 @@ import { PatronSprite } from "./ui/patron-sprite";
 import { Patron } from "./data/patron";
 import { Dialogue } from "./data/dialogue";
 import { Taste } from "./data/taste";
+import { Flavor } from "./data/flavor";
 
 export let prop_hand: Hand;
 export let prop_mixer: Mixer;
 export let prop_patron: PatronHolder;
 export let updateables: IUpdateable[] = [];
 export let camera: Camera;
-export const currentMixture = new Mixture()
+export const currentMixture = new Mixture(3)
 export let allPatrons: Patron[]
 
 export interface IUpdateable {
@@ -31,53 +32,123 @@ export function main() {
     allPatrons = [
         new Patron(
             "Beep",
-            new Taste(),
+            new Taste()
+                .addLike(Flavor.Oily).addLike(Flavor.Bitter).addLike(Flavor.Salty)
+                .addHate(Flavor.Sweet).addHate(Flavor.Earthy).addHate(Flavor.Mushy),
             new Dialogue(),
             new PatronSprite(0.25, Assets.spritesheet("beep"))
         ),
 
         new Patron(
             "Zap",
-            new Taste(),
+            new Taste()
+                .addLike(Flavor.Majickal).addLike(Flavor.Earthy).addLike(Flavor.Funny)
+                .addHate(Flavor.Toxic).addHate(Flavor.Dizzy),
             new Dialogue(),
             new PatronSprite(0.3, Assets.spritesheet("zap"))
         ),
 
         new Patron(
             "Skrbaogrk",
-            new Taste(),
+            new Taste()
+                .addLike(Flavor.Funny)
+                .addLike(Flavor.Crisp)
+                .addLike(Flavor.Sweet)
+                .addLike(Flavor.Earthy)
+                .addLike(Flavor.Majickal)
+                .addLike(Flavor.Salty)
+                .addLike(Flavor.Oily)
+                .addLike(Flavor.Dizzy)
+                .addLike(Flavor.Toxic)
+                .addLike(Flavor.Bitter)
+                .addLike(Flavor.Gross)
+            ,
             new Dialogue(),
             new PatronSprite(0.5, Assets.spritesheet("creature"))
         ),
 
         new Patron(
             "Psycho-X",
-            new Taste(),
+            new Taste()
+                .addLike(Flavor.Toxic)
+                .addHate(Flavor.Oily),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("psycho-x"))
         ),
 
         new Patron(
             "Uncle Jim",
-            new Taste(),
+            new Taste()
+                .addLike(Flavor.Funny).addLike(Flavor.Dizzy).addLike(Flavor.Bitter)
+                .addHate(Flavor.Toxic).addHate(Flavor.Crisp).addHate(Flavor.Gross).addHate(Flavor.Majickal).addHate(Flavor.Sweet),
             new Dialogue(),
             new PatronSprite(0.3, Assets.spritesheet("jim"))
         ),
 
         new Patron(
             "Mr. W",
-            new Taste(),
+            new Taste()
+                .addLike(Flavor.Salty).addLike(Flavor.Sweet).addLike(Flavor.Oily)
+                .addHate(Flavor.Toxic).addHate(Flavor.Majickal).addHate(Flavor.Crisp).addHate(Flavor.Dizzy),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("mrw"))
         ),
 
         new Patron(
             "Donny",
-            new Taste(),
+            new Taste()
+                .addLike(Flavor.Gross).addLike(Flavor.Dizzy).addLike(Flavor.Funny)
+                .addHate(Flavor.Bitter).addHate(Flavor.Sweet).addHate(Flavor.Mushy),
             new Dialogue(),
             new PatronSprite(0.4, Assets.spritesheet("donny"))
         ),
     ]
+
+    // debugging tool to make it easy to see what ingredients work and don't work
+    if (game.isDevBuild) {
+        let enjoyedIngredients: Ingredient[] = []
+
+        for (let patron of allPatrons) {
+            if (patron.name == "Skrbaogrk") {
+                continue
+            }
+
+            console.log(patron.name, patron.taste.getLikesNames())
+
+            let allTheGoodStuff = new Mixture(100)
+
+            for (let ingredient of Ingredient.All) {
+                let reaction = patron.taste.getReactionToProfile(ingredient.flavorProfile)
+                let willEat = reaction.dislikedFlavorCount() == 0
+                let willEnjoy = reaction.likedFlavorCount() > 0 && willEat
+                let tooGood = reaction.likedFlavorCount() > 1 && willEnjoy
+
+                if (willEnjoy) {
+                    allTheGoodStuff.addIngredient(ingredient)
+                    enjoyedIngredients.push(ingredient)
+                }
+
+                console.log(
+                    "\t", willEat ? (willEnjoy ? "✅" : "➖") : "❌",
+                    ingredient.name,
+                    willEat ? "" : `(${reaction.dislikedFlavorNames().join(", ")})`,
+                    tooGood ? "❓" : "",
+                    willEnjoy ? `(${reaction.likedFlavorNames().join(', ')})` : ""
+                )
+            }
+
+            let reactionToEverything = patron.taste.getReactionToProfile(allTheGoodStuff.flavorProfile())
+            if (reactionToEverything.missingFlavorCount() > 0) {
+                console.log(`🟡🟡🟡 No source of ${reactionToEverything.missingFlavorNames().join(", ")}`)
+            }
+        }
+
+        for (let ingredient of Ingredient.All) {
+            if (!enjoyedIngredients.includes(ingredient)) {
+                console.log("🟠🟠🟠", ingredient.name, "Is not enjoyed by anyone")
+            }
+        }
+    }
 
     updateables.push({
         update: (dt) => {
@@ -165,7 +236,7 @@ export function main() {
 
     function readyToServe_state() {
         ingredientButtons.visible = false
-        tooltip.setText("Ready!", "")
+        tooltip.setText("Ready to Mix!", (currentMixture.flavorProfile().allNonZeroFlavors().map((flavor) => flavor.name)).join(", "))
         serveButtons.visible = true
     }
 
