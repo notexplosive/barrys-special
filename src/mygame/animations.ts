@@ -5,6 +5,7 @@ import { Ingredient } from "./data/ingredient";
 import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween, DynamicTween, Tweenable, TweenablePoint, ITween } from './data/tween';
 import { createDropParticle, DropParticle } from './drop-particle';
 import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera } from './main';
+import { Opinion } from "./ui/patron-sprite";
 
 export const animationTween = new TweenChain()
 
@@ -87,7 +88,7 @@ export function animate_mixAndServe() {
                     .add(new Tween<Point>(prop_hand.tweenablePosition, prop_mixer.position, 0.75, EaseFunctions.quadSlowFastSlow))
                     .add(handAndMixerTogether(
                         (handAndMixer) => new DynamicTween(() =>
-                            new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 1000), 0.25, EaseFunctions.quadSlowFast))))
+                            new Tween<Point>(handAndMixer.tweenablePosition, prop_hand.restingPosition, 0.25, EaseFunctions.quadSlowFast))))
             )
             .addChannel(new Tween(camera.tweenablePosition, camera.downPosition, 0.75, EaseFunctions.quadFastSlow))
     )
@@ -97,19 +98,45 @@ export function animate_mixAndServe() {
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
-    animationTween.add(new Tween(camera.tweenablePosition, addPoints(camera.restingPosition, new Point(0, 100)), 0.5, EaseFunctions.quadFastSlow))
+    animationTween.add(new Tween(camera.tweenablePosition, camera.upPosition, 0.5, EaseFunctions.quadFastSlow))
 
     animationTween.add(handAndMixerTogether(
         (handAndMixer) => new DynamicTween(() =>
             new TweenChain()
-                .add(new CallbackTween(() => { prop_mixer.becomeGlass() }))
-                .add(new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 200), 0.75, EaseFunctions.quadFastSlow))
-                .add(new Tween<Point>(handAndMixer.tweenablePosition, new Point(handAndMixer.position.x, 235), 0.25, EaseFunctions.quadSlowFast))
+                .add(new CallbackTween(() => { prop_mixer.becomeGlass(currentMixture) }))
+                .add(new Tween<Point>(handAndMixer.tweenablePosition, new Point(prop_mixer.restingPosition.x, 200), 0.75, EaseFunctions.quadFastSlow))
+                .add(new Tween<Point>(handAndMixer.tweenablePosition, new Point(prop_mixer.restingPosition.x, 235), 0.25, EaseFunctions.quadSlowFast))
         )))
     animationTween.add(new Tween(prop_hand.tweenablePosition, prop_hand.restingPosition, 1, EaseFunctions.quadSlowFastSlow))
 
-    animationTween.add(new WaitSecondsTween(2))
+    // patron drinks and reacts
+    animationTween.add(new WaitSecondsTween(0.25))
+    animationTween.add(new Tween(prop_mixer.tweenableRotation, -1, 0.25, EaseFunctions.quadFastSlow))
+    animationTween.add(new CallbackTween(() => prop_mixer.drink()))
+    animationTween.add(new Tween(prop_mixer.tweenableRotation, 0, 0.25, EaseFunctions.quadFastSlow))
+    animationTween.add(new WaitSecondsTween(0.25))
 
+    let reaction = new TweenChain();
+    animationTween.add(new CallbackTween(() => {
+        let opinion = prop_patron.getPatron().patronSprite.getOpinion(currentMixture)
+
+        prop_patron.getPatron().patronSprite.showOpinion(opinion)
+
+        if (opinion == Opinion.Love) {
+            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -25)), 0.15, EaseFunctions.quadFastSlow))
+            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 0)), 0.15, EaseFunctions.quadSlowFast))
+        }
+        if (opinion == Opinion.Neutral) {
+            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -10)), 0.5, EaseFunctions.quadFastSlow))
+        }
+        if (opinion == Opinion.Hate) {
+            reaction.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 25)), 0.5, EaseFunctions.quadFastSlow))
+        }
+    }))
+    animationTween.add(reaction)
+
+
+    // grab empty glass back
     animationTween.add(new Tween(prop_hand.tweenablePosition, prop_mixer.position, 1, EaseFunctions.quadSlowFastSlow))
     animationTween.add(handAndMixerTogether(
         (handAndMixer) => new DynamicTween(() =>
@@ -118,14 +145,19 @@ export function animate_mixAndServe() {
 
         )))
 
-    animationTween.add(new Tween(camera.tweenablePosition, camera.restingPosition, 0.5, EaseFunctions.quadFastSlow))
-
     // cleanup
     animationTween.add(new CallbackTween(() => {
         prop_hand.position = prop_hand.restingPosition;
         prop_mixer.becomeMixer()
     }))
 
+    animate_patronLeaves()
+
+    animationTween.add(new CallbackTween(() => {
+        prop_patron.rotatePatron()
+    }))
+
+    animate_patronEnters()
     animate_spawnMixer()
 }
 
@@ -157,7 +189,10 @@ export function animate_spawnMixer() {
 }
 
 export function animate_patronEnters() {
-    animationTween.add(new CallbackTween(() => { prop_patron.position = addPoints(prop_patron.entrancePosition, new Point(0, 50)) }))
+    animationTween.add(new CallbackTween(() => {
+        prop_patron.getPatron().patronSprite.showIntro()
+        prop_patron.position = addPoints(prop_patron.entrancePosition, new Point(0, 50))
+    }))
     animationTween.add(new Tween(camera.tweenablePosition, camera.upPosition, 0.5, EaseFunctions.quadSlowFastSlow))
 
     let travelTime = 2
@@ -184,4 +219,34 @@ export function animate_patronEnters() {
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -30)), 0.25, EaseFunctions.quadFastSlow))
     animationTween.add(new Tween(prop_patron.tweenablePosition, prop_patron.restingPosition, 0.25, EaseFunctions.quadSlowFast))
     animationTween.add(new Tween(camera.tweenablePosition, camera.restingPosition, 0.5, EaseFunctions.quadSlowFastSlow))
+}
+
+export function animate_patronLeaves() {
+    animationTween.add(new Tween(camera.tweenablePosition, camera.upPosition, 0.5, EaseFunctions.quadSlowFastSlow))
+
+    animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -30)), 0.25, EaseFunctions.quadFastSlow))
+    animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 50)), 0.3, EaseFunctions.quadSlowFast))
+
+    let travelTime = 2
+    let bobAmount = 0.1
+    animationTween.add(new CallbackTween(() => { prop_patron.position = addPoints(prop_patron.restingPosition, new Point(0, 50)) }))
+    animationTween.add(
+        new MultiplexTween()
+            .addChannel(
+                new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.exitPosition, new Point(0, 50)), travelTime, EaseFunctions.quadSlowFast)
+            )
+            .addChannel(
+                new TweenChain()
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new Tween(prop_patron.tweenableRotation, 0, 0.25, EaseFunctions.linear))
+            )
+    )
+
 }

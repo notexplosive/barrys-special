@@ -48,4 +48,8 @@ export class Mixture {
 
         return result
     }
+
+    color(): number {
+        return 0xff0000
+    }
 }
