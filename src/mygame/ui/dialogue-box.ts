@@ -22,10 +22,12 @@ export class DialogueBox extends Container implements IUpdateable {
         this.tweenableCharIndex = new TweenableNumber(() => this.currentCharIndex, val => this.currentCharIndex = val)
 
         game.onClick.addCallback(() => {
-            if (this.currentTween.isDone()) {
-                this.advanceToNextPage()
-            } else {
-                this.currentTween.skip()
+            if (this.currentTween !== null) {
+                if (this.currentTween.isDone()) {
+                    this.advanceToNextPage()
+                } else {
+                    this.currentTween.skip()
+                }
             }
         })
     }

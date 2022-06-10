@@ -9,7 +9,7 @@ import { Tooltip } from "./ui/tooltip";
 import { PrimitiveRenderer } from '../limbo/render/primitive';
 import { Mixture } from "./data/mixture";
 import { MixtureStatus } from "./ui/mixture-status";
-import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions, WaitSecondsTween, CallbackTween, TweenableNumber } from './data/tween';
+import { IsDoneFunction, Tweenable, TweenChain, TweenablePoint, EaseFunctions, WaitSecondsTween, CallbackTween, TweenableNumber, WaitUntilTween } from './data/tween';
 import { PatronSprite } from "./ui/patron-sprite";
 import { Patron } from "./data/patron";
 import { Dialogue } from "./data/dialogue";
@@ -364,6 +364,72 @@ export function main() {
         }
     }))
 
+    let gameStarted = { val: false }
+
+    prop_patron.position = prop_patron.exitPosition.clone()
+
+    let titleScreen = new Container()
+    game.rootContainer.addChild(titleScreen)
+
+    let titleText = new Text("Beep 'n' Zap: Barry's Special",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 55,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    titleScreen.addChild(titleText)
+    titleText.anchor.set(0.5)
+    titleText.position = addPoints(origin, new Point(0, -200))
+
+    let subtitleText = new Text("By NotExplosive",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 35,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    titleScreen.addChild(subtitleText)
+    subtitleText.anchor.set(0.5, 0)
+    subtitleText.position = addPoints(origin, new Point(0, -150))
+
+    let clickText = new Text("Click anywhere to begin\nScroll down to learn how to play",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 35,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    titleScreen.addChild(clickText)
+    clickText.anchor.set(0.5, 0)
+    clickText.position = addPoints(origin, new Point(0, 100))
+
+
+    updateables.push({
+        update: () => {
+            if (!gameStarted.val) {
+                game.requestInteractive()
+                game.requestButtonModeTrue()
+                game.onClick.addCallback(() => { gameStarted.val = true })
+            }
+
+            titleScreen.visible = !gameStarted.val
+        }
+    })
+
+    animationTween.add(new WaitUntilTween(() => gameStarted.val == true))
     animate_patronEnters()
 }
 
