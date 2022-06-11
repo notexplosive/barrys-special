@@ -12,6 +12,8 @@ export function preload() {
     prepareLoad(AssetLoader.Sound, "gulp", "gulp.ogg")
     prepareLoad(AssetLoader.Sound, "footstep", "footstep.ogg")
     prepareLoad(AssetLoader.Sound, "ice-shake", "ice-shake.ogg")
+    prepareLoad(AssetLoader.Sound, "gurgle", "gurgle.ogg")
+    prepareLoad(AssetLoader.Sound, "fwp", "fwp.ogg")
     prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "ingredients", "barrys-ingredients.png")
     prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "icons", "icons.png")
     prepareLoad(AssetLoader.dynamicSpritesheet({ width: 128, height: 128 }, gridBasedSpriteSheetData), "glass", "barrys-glass.png")

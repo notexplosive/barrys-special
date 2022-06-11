@@ -23,12 +23,14 @@ export function animate_dropIngredients(ingredient: Ingredient) {
         new MultiplexTween()
             .addChannel(
                 new TweenChain()
+                    .add(new CallbackTween(() => { Assets.sound("fwp").play() }))
                     .add(new Tween<Point>(prop_hand.tweenablePosition, prop_hand.activePosition, handTravelTime / 2, EaseFunctions.quadFastSlow))
                     .add(new Tween<Point>(prop_hand.tweenablePosition, prop_hand.restingPosition, handTravelTime / 2, EaseFunctions.quadSlowFast))
             )
             .addChannel(
                 new TweenChain()
                     .add(new WaitSecondsTween(handTravelTime / 3))
+                    .add(new CallbackTween(() => { Assets.sound("gurgle").play() }))
                     .add(new DynamicTween(() => {
                         let particles: DropParticle[] = []
                         for (let i = 0; i < 10; i++) {
@@ -96,7 +98,11 @@ export function animate_mixAndServe() {
     )
 
     animationTween.add(new WaitSecondsTween(0.25))
-    animationTween.add(new CallbackTween(() => { Assets.sound("ice-shake").play() }))
+    animationTween.add(new CallbackTween(() => {
+        let shake = Assets.sound("ice-shake")
+        shake.volume = 0.25
+        shake.play()
+    }))
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
@@ -173,7 +179,11 @@ export function animate_mixAndServe() {
         }
 
         if (opinion == Opinion.Dislike) {
-            reactionTween.add(new CallbackTween(() => { Assets.sound("ouch").play() }))
+            reactionTween.add(new CallbackTween(() => {
+                let ouch = Assets.sound("ouch")
+                ouch.volume = 0.5
+                ouch.play()
+            }))
             reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 25)), 0.5, EaseFunctions.quadFastSlow))
             animate_showDialogue(reactionTween, () => prop_patron.getPatron().dialogue.dislike(reaction))
         }

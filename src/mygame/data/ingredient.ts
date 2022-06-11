@@ -38,7 +38,7 @@ export class Ingredient {
             null,
             0x71413b,
             new FlavorProfile()
-                .set(Flavor.Earthy, 1)
+                //.set(Flavor.Earthy, 1)
                 .set(Flavor.Bitter, 1)
                 .set(Flavor.Energizing, 1)
         ),
@@ -92,7 +92,7 @@ export class Ingredient {
             null,
             0x14a02e,
             new FlavorProfile()
-                .set(Flavor.Earthy, 1)
+                //.set(Flavor.Earthy, 1)
                 .set(Flavor.Salty, 1)
         ),
         new Ingredient(
@@ -112,7 +112,7 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Funny, 1)
                 .set(Flavor.Dizzy, 1)
-                .set(Flavor.Earthy, 1)
+            //.set(Flavor.Earthy, 1)
         ),
     ]
 }
