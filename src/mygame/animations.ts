@@ -206,6 +206,7 @@ export function animate_mixAndServe() {
         if (isGameOver) {
             console.log("The end!!")
         } else {
+            animationTween.add(new WaitSecondsTween(Math.random() * 2 + 1))
             animate_patronEnters()
             animate_spawnMixer()
         }
