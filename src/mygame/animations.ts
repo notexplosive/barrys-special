@@ -6,6 +6,8 @@ import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFu
 import { createDropParticle, DropParticle } from './drop-particle';
 import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera, dialogueBox, prop_gift, addIngredientToInventory } from './main';
 import { Opinion } from "./ui/patron-sprite";
+import { sound } from '@pixi/sound';
+import { Assets } from "../limbo/core/assets";
 
 export const animationTween = new TweenChain()
 
@@ -94,10 +96,12 @@ export function animate_mixAndServe() {
     )
 
     animationTween.add(new WaitSecondsTween(0.25))
+    animationTween.add(new CallbackTween(() => { Assets.sound("ice-shake").play() }))
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
     animationTween.add(new DynamicTween(shakeCamera))
+    animationTween.add(new CallbackTween(() => Assets.sound("quick-pour").play()))
     animationTween.add(new Tween(camera.tweenablePosition, camera.upPosition, 0.5, EaseFunctions.quadFastSlow))
 
     animationTween.add(handAndMixerTogether(
@@ -113,6 +117,7 @@ export function animate_mixAndServe() {
     animationTween.add(new WaitSecondsTween(0.25))
     animationTween.add(new Tween(prop_mixer.tweenableRotation, -1, 0.25, EaseFunctions.quadFastSlow))
     animationTween.add(new CallbackTween(() => prop_mixer.drink()))
+    animationTween.add(new CallbackTween(() => Assets.sound("gulp").play()))
     animationTween.add(new Tween(prop_mixer.tweenableRotation, 0, 0.25, EaseFunctions.quadFastSlow))
     animationTween.add(new WaitSecondsTween(0.25))
 
@@ -146,6 +151,7 @@ export function animate_mixAndServe() {
                 }))
 
                 reactionTween.add(new Tween(prop_gift.tweenablePosition, prop_gift.deployedPosition, 0.15, EaseFunctions.quadFastSlow))
+                reactionTween.add(new CallbackTween(() => { Assets.sound("pickup").play() }))
                 reactionTween.add(new WaitSecondsTween(1))
                 reactionTween.add(new Tween(prop_hand.tweenablePosition, prop_gift.position, 0.5, EaseFunctions.quadFastSlow))
                 reactionTween.add(new CallbackTween(() => {
@@ -167,6 +173,7 @@ export function animate_mixAndServe() {
         }
 
         if (opinion == Opinion.Dislike) {
+            reactionTween.add(new CallbackTween(() => { Assets.sound("ouch").play() }))
             reactionTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 25)), 0.5, EaseFunctions.quadFastSlow))
             animate_showDialogue(reactionTween, () => prop_patron.getPatron().dialogue.dislike(reaction))
         }
@@ -212,6 +219,7 @@ export function animate_putOnLid() {
     }))
 
     animationTween.add(new Tween<number>(prop_mixer.lidTweenableY, 0, 0.15, EaseFunctions.quadSlowFast))
+    animationTween.add(new CallbackTween(() => { Assets.sound("metal-impact").play() }))
     animationTween.add(new Tween<number>(prop_mixer.lidTweenableY, -10, 0.1, EaseFunctions.quadFastSlow))
     animationTween.add(new Tween<number>(prop_mixer.lidTweenableY, 0, 0.1, EaseFunctions.quadSlowFast))
 }
@@ -227,6 +235,7 @@ export function animate_removeLid() {
 export function animate_spawnMixer() {
     animationTween.add(new CallbackTween(() => { prop_mixer.position = new Point(prop_mixer.restingPosition.x, 0) }))
     animationTween.add(new Tween(prop_mixer.tweenablePosition, prop_mixer.restingPosition, 0.5, EaseFunctions.quadSlowFast))
+    animationTween.add(new CallbackTween(() => { Assets.sound("metal-impact").play() }))
     animationTween.add(new Tween(prop_mixer.tweenablePosition, addPoints(prop_mixer.restingPosition, new Point(0, -10)), 0.15, EaseFunctions.quadFastSlow))
     animationTween.add(new Tween(prop_mixer.tweenablePosition, prop_mixer.restingPosition, 0.15, EaseFunctions.quadSlowFast))
     animationTween.add(new CallbackTween(() => prop_mixer.lid.visible = false))
@@ -253,10 +262,15 @@ export function animate_patronEnters() {
                     .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
                     .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
                     .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, 0, 0.25, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
             )
     )
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 55)), 0.3, EaseFunctions.quadSlowFast))
@@ -284,6 +298,7 @@ export function animate_patronLeaves() {
 
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, -30)), 0.25, EaseFunctions.quadFastSlow))
     animationTween.add(new Tween(prop_patron.tweenablePosition, addPoints(prop_patron.restingPosition, new Point(0, 50)), 0.3, EaseFunctions.quadSlowFast))
+    animationTween.add(new CallbackTween(() => { Assets.sound("footstep").play() }))
 
     let travelTime = 2
     let bobAmount = 0.1
@@ -296,10 +311,15 @@ export function animate_patronLeaves() {
             .addChannel(
                 new TweenChain()
                     .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
+                    .add(new CallbackTween(() => { Assets.sound("footstep").play() }))
                     .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
                     .add(new Tween(prop_patron.tweenableRotation, -bobAmount, travelTime / 8, EaseFunctions.linear))
                     .add(new Tween(prop_patron.tweenableRotation, bobAmount, travelTime / 8, EaseFunctions.linear))
