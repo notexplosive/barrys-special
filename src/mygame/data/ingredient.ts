@@ -26,7 +26,7 @@ export class Ingredient {
             1,
             "Veinberry",
             null,
-            0x73172d,
+            0xff0000,
             new FlavorProfile()
                 .set(Flavor.Sweet, 1)
                 .set(Flavor.Bitter, 1)
@@ -72,7 +72,7 @@ export class Ingredient {
             8,
             "Lanky Mushroom",
             null,
-            0x23674e,
+            0xaaaaff,
             new FlavorProfile()
                 .set(Flavor.Funny, 1)
                 .set(Flavor.Mushy, 1)
@@ -90,7 +90,7 @@ export class Ingredient {
             11,
             "Ocean Kelp",
             null,
-            0x14a02e,
+            0xaaaaaa,
             new FlavorProfile()
                 //.set(Flavor.Earthy, 1)
                 .set(Flavor.Salty, 1)

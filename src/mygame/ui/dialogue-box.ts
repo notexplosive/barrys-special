@@ -1,6 +1,6 @@
 import { Container, Text } from "pixi.js";
 import { Tween, Tweenable, TweenableNumber, EaseFunction, EaseFunctions } from '../data/tween';
-import { IUpdateable } from '../main';
+import { IUpdateable, prop_patron } from '../main';
 import { game } from '../../index';
 
 export class DialogueBox extends Container implements IUpdateable {
@@ -10,6 +10,8 @@ export class DialogueBox extends Container implements IUpdateable {
     private currentTween: Tween<number>;
     private currentCharIndex: number;
     private tweenableCharIndex: TweenableNumber;
+    previousCharIndex: number;
+    blipIndex: number = 0;
 
     constructor() {
         super()
@@ -49,8 +51,22 @@ export class DialogueBox extends Container implements IUpdateable {
 
             this.currentTween.updateAndGetOverflow(dt)
             if (!this.isDone()) {
+                if (this.currentCharIndex != this.previousCharIndex) {
+                    let currentChar = this.currentPageContent().charAt(this.currentCharIndex)
+                    if (/^[a-zA-Z]+$/.test(currentChar)) {
+                        this.attemptPlayBlip()
+                    }
+                }
                 this.renderedContent.text = this.currentPageContent().slice(0, this.currentCharIndex)
+                this.previousCharIndex = this.currentCharIndex
             }
+        }
+    }
+    attemptPlayBlip() {
+        this.blipIndex++
+
+        if (this.blipIndex % 5 == 0) {
+            prop_patron.getPatron().playVoiceBlip()
         }
     }
 

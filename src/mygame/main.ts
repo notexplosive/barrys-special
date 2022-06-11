@@ -39,6 +39,7 @@ export function main() {
     allPatrons = [
         new Patron(
             "Beep",
+            "eeeee",
             new Taste()
                 .addLike(Flavor.Oily).addLike(Flavor.Bitter).addLike(Flavor.Salty)
                 .addHate(Flavor.Sweet).addHate(Flavor.Mushy).addHate(Flavor.Hairy),
@@ -60,11 +61,12 @@ export function main() {
 
         new Patron(
             "Zap",
+            "buzz",
             new Taste()
                 .addLike(Flavor.Majickal).addLike(Flavor.Energizing)
                 .addHate(Flavor.Dizzy),
             new Dialogue(
-                ["I'm following Beep around, as usual.", "I'll have the special, preferably something that restore Majick."],
+                ["I'm following Beep around, as usual.", "She's confident there's a Giant Robot Part around here somewhere.", "I'll have the special, preferably something that restore Majick."],
                 ["My mana is low...", "I could really use something to replenish my Majicks."],
                 ["Ahh... fully restored!", "Thanks Barry! You're the best!"],
                 ["That potion is... a dud.", "None of my stats feel restored."],
@@ -81,6 +83,7 @@ export function main() {
 
         new Patron(
             "Skrbaogrk",
+            null,
             new Taste().enableEatsAnything()
             ,
             new Dialogue(
@@ -101,6 +104,7 @@ export function main() {
 
         new Patron(
             "Psycho-X",
+            "scroff",
             new Taste()
                 .addLike(Flavor.Toxic)
                 .addHate(Flavor.Oily),
@@ -122,6 +126,7 @@ export function main() {
 
         new Patron(
             "Uncle Jim",
+            "bong",
             new Taste()
                 .addLike(Flavor.Funny).addLike(Flavor.Energizing).addLike(Flavor.Bitter)
                 .addHate(Flavor.Mushy).addHate(Flavor.Sweet).addHate(Flavor.Hairy),
@@ -143,6 +148,7 @@ export function main() {
 
         new Patron(
             "Mr. W",
+            null,
             new Taste()
                 .addLike(Flavor.Salty).addLike(Flavor.Sweet).addLike(Flavor.Oily)
                 .addHate(Flavor.Toxic).addHate(Flavor.Dizzy),
@@ -164,6 +170,7 @@ export function main() {
 
         new Patron(
             "Donny",
+            "burp",
             new Taste()
                 .addLike(Flavor.Nasty).addLike(Flavor.Oily).addLike(Flavor.Mushy)
                 .addHate(Flavor.Sweet).addHate(Flavor.Hairy),
