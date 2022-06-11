@@ -4,10 +4,10 @@ import { Updater } from "../limbo/data/updater";
 import { Ingredient } from "./data/ingredient";
 import { IsDoneFunction, Tween, TweenChain, WaitUntilTween, EaseFunction, EaseFunctions, CallbackTween, MultiplexTween, WaitSecondsTween, DynamicTween, Tweenable, TweenablePoint, ITween } from './data/tween';
 import { createDropParticle, DropParticle } from './drop-particle';
-import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera, dialogueBox, prop_gift, addIngredientToInventory } from './main';
+import { currentMixture, Hand, Mixer, prop_hand, prop_mixer, updateables, prop_patron, addPoints, Camera, camera, dialogueBox, prop_gift, addIngredientToInventory, gameState } from './main';
 import { Opinion } from "./ui/patron-sprite";
 import { sound } from '@pixi/sound';
-import { Assets } from "../limbo/core/assets";
+import { Assets, finishLoad } from '../limbo/core/assets';
 
 export const animationTween = new TweenChain()
 
@@ -204,7 +204,8 @@ export function animate_mixAndServe() {
         let isGameOver = prop_patron.rotatePatron()
 
         if (isGameOver) {
-            console.log("The end!!")
+            gameState.finished = true
+            animationTween.add(new WaitUntilTween(() => false))
         } else {
             animationTween.add(new WaitSecondsTween(Math.random() * 2 + 1))
             animate_patronEnters()

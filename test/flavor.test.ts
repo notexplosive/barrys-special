@@ -59,19 +59,19 @@ describe("flavor", () => {
 describe("mixtures", () => {
     test("behaves properly", () => {
         let mixture = new Mixture(3)
-        let ingredient1 = new Ingredient(0, "Test 1", "", 0xffffff, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Gross, -1))
+        let ingredient1 = new Ingredient(0, "Test 1", "", 0xffffff, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Nasty, -1))
         let ingredient2 = new Ingredient(0, "Test 2", "", 0xffffff, new FlavorProfile().set(Flavor.Majickal, 1).set(Flavor.Toxic, -1))
         mixture.addIngredient(ingredient1)
         mixture.addIngredient(ingredient2)
 
         expect(mixture.flavorProfile().get(Flavor.Toxic)).toBe(1)
-        expect(mixture.flavorProfile().get(Flavor.Gross)).toBe(-1)
+        expect(mixture.flavorProfile().get(Flavor.Nasty)).toBe(-1)
         expect(mixture.flavorProfile().get(Flavor.Majickal)).toBe(1)
     })
 
     test("color with 1 ingredients", () => {
         let mixture = new Mixture(3)
-        let ingredient1 = new Ingredient(0, "Test 1", "", 0xabcabc, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Gross, -1))
+        let ingredient1 = new Ingredient(0, "Test 1", "", 0xabcabc, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Nasty, -1))
         mixture.addIngredient(ingredient1)
 
         expect(mixture.color()).toBe(0xabcabc)
@@ -79,7 +79,7 @@ describe("mixtures", () => {
 
     test("color with 2 ingredients", () => {
         let mixture = new Mixture(3)
-        let ingredient1 = new Ingredient(0, "Test 1", "", 0x202200, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Gross, -1))
+        let ingredient1 = new Ingredient(0, "Test 1", "", 0x202200, new FlavorProfile().set(Flavor.Toxic, 2).set(Flavor.Nasty, -1))
         let ingredient2 = new Ingredient(0, "Test 2", "", 0x402266, new FlavorProfile().set(Flavor.Majickal, 1).set(Flavor.Toxic, -1))
         mixture.addIngredient(ingredient1)
         mixture.addIngredient(ingredient2)
@@ -92,21 +92,21 @@ describe("taste", () => {
     test("taste reacts appropriately", () => {
         let subject = new Taste()
             .addHate(Flavor.Toxic)
-            .addLike(Flavor.Gross)
+            .addLike(Flavor.Nasty)
             .addLike(Flavor.Sweet)
             .addLike(Flavor.Oily)
 
         let profile = new FlavorProfile()
             .set(Flavor.Crisp, 1)
-            .set(Flavor.Gross, 1)
+            .set(Flavor.Nasty, 1)
             .set(Flavor.Toxic, 1)
             .set(Flavor.Oily, 1)
 
         expect(subject.getOpinionOnFlavor(Flavor.Toxic)).toBe(Opinion.Dislike)
-        expect(subject.getOpinionOnFlavor(Flavor.Gross)).toBe(Opinion.Like)
+        expect(subject.getOpinionOnFlavor(Flavor.Nasty)).toBe(Opinion.Like)
         expect(subject.getOpinionOnFlavor(Flavor.Sweet)).toBe(Opinion.Like)
         expect(subject.getOpinionOnFlavor(Flavor.Crisp)).toBe(Opinion.Neutral)
-        expect(subject.getReactionToProfile(profile)).toMatchObject(new Reaction([Flavor.Gross, Flavor.Oily], [Flavor.Toxic], [Flavor.Sweet]))
+        expect(subject.getReactionToProfile(profile)).toMatchObject(new Reaction([Flavor.Nasty, Flavor.Oily], [Flavor.Toxic], [Flavor.Sweet]))
     })
 
     test("enjoy thing correctly", () => {

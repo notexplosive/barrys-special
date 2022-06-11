@@ -27,6 +27,7 @@ export let camera: Camera;
 export const currentMixture = new Mixture(3)
 export let allPatrons: Patron[]
 export let dialogueBox: DialogueBox
+export let gameState = { started: false, finished: false }
 
 let ingredientButtons: IngredientButtons
 
@@ -40,7 +41,7 @@ export function main() {
             "Beep",
             new Taste()
                 .addLike(Flavor.Oily).addLike(Flavor.Bitter).addLike(Flavor.Salty)
-                .addHate(Flavor.Sweet).addHate(Flavor.Mushy),
+                .addHate(Flavor.Sweet).addHate(Flavor.Mushy).addHate(Flavor.Hairy),
             new Dialogue(
                 ["Hey Barry!", "Zap and I are out looking for Giant Robot Parts.", "I figured I'd make a quick stop to see what the special is."],
                 ["I'm back!", "No Giant Robot Parts today but it was still a pretty fun day."],
@@ -60,13 +61,13 @@ export function main() {
         new Patron(
             "Zap",
             new Taste()
-                .addLike(Flavor.Majickal).addLike(Flavor.Crisp).addLike(Flavor.Funny)
+                .addLike(Flavor.Majickal).addLike(Flavor.Energizing)
                 .addHate(Flavor.Dizzy),
             new Dialogue(
                 ["I'm following Beep around, as usual.", "I'll have the special, preferably something that restore Majick."],
                 ["My mana is low...", "I could really use something to replenish my Majicks."],
                 ["Ahh... fully restored!", "Thanks Barry! You're the best!"],
-                ["That potion is... a dud."],
+                ["That potion is... a dud.", "None of my stats feel restored."],
                 (reaction) => {
                     return [`Hmm... It tastes ${reaction.likedFlavorNames().join(" and ")}, which I like.`, `Needs more... ${reaction.missingFlavorNames()[0]}...`]
                 },
@@ -83,7 +84,7 @@ export function main() {
             new Taste().enableEatsAnything()
             ,
             new Dialogue(
-                ["(A horrifying creature approaches the bar)", "(You're not sure what it wants)", "(Your feel a cold sweat)", "(You look down to the bar and start preparing a drink)"],
+                ["(A horrifying creature approaches the bar)", "(You're not sure what it wants)", "(You feel a cold sweat)", "(You look down to the bar and start preparing a drink)"],
                 ["(It's back, and so is that metallic taste in your mouth)"],
                 ["(It... seems satisfied?)", "(It left something on the table)", "(Is it an offering?)"],
                 ["(It didn't seem to care for that.)"],
@@ -106,7 +107,7 @@ export function main() {
             new Dialogue(
                 ["Good evening...", "I'm trying to craft the perfect poison...", "Think you can help me out?"],
                 ["Mmyes... I have returned.", "Maybe you've found something sufficiently...", "Mmmm-deadly?"],
-                ["Mmmmhmm... yes... This will do nicely.", "Meheheheheehhehhh", "Take this as a reward", "I found it in Uncle Jim's secret garden."],
+                ["Mmmmhmm... yes... Just like Grandma-X used to make.", "Meheheheheehhehhh", "Take this as a reward", "I found it in Uncle Jim's secret garden."],
                 ["Is this a saline solution?", "I taste nothing!"],
                 (reaction) => {
                     return ["Intriguing...", `I'm looking for something more...`, `${reaction.missingFlavorNames()[0]}...`]
@@ -125,7 +126,7 @@ export function main() {
                 .addLike(Flavor.Funny).addLike(Flavor.Energizing).addLike(Flavor.Bitter)
                 .addHate(Flavor.Mushy).addHate(Flavor.Sweet).addHate(Flavor.Hairy),
             new Dialogue(
-                ["Hey there nephew.", "It's me, you're Uncle Jim!", "I'll take whatever you got."],
+                ["Hey there nephew.", "It's me, your Uncle Jim!", "I'll take whatever you got."],
                 ["How's my favorite nephew?", "I'm looking for a little pick-me-up."],
                 ["Woahh! That's good stuff!", "Here, my new girlfriend gave me this and uh... I don't want it."],
                 ["Huh...", "I didn't particularly like or dislike any of that."],
@@ -164,15 +165,15 @@ export function main() {
         new Patron(
             "Donny",
             new Taste()
-                .addLike(Flavor.Gross).addLike(Flavor.Oily).addLike(Flavor.Funny)
-                .addHate(Flavor.Sweet).addHate(Flavor.Mushy).addHate(Flavor.Hairy),
+                .addLike(Flavor.Nasty).addLike(Flavor.Oily).addLike(Flavor.Mushy)
+                .addHate(Flavor.Sweet).addHate(Flavor.Hairy),
             new Dialogue(
                 ["Hhhhey there.", "Look... there's no easy way to put this.", "Uhh..", "This is a robbery!", "Gimme all your cash!", "Oh you don't have any cash?", "Just drinks?", "Well uh... gimme a drink!"],
                 ["Stick 'em up this is a--", "Oh wait I remember you."],
                 ["Look...", "This is without a doubt.", "The worst robbery I've ever taken part in.", "But that last drink was pretty tasty", "So I'm gonna share something with you.", "It's my illegal dragon tooth collection.", "If anyone asks you, you didn't get them from me.", "Anyway, gotta run!"],
                 ["Eh... kinda bland."],
                 (reaction) => {
-                    return [`Oo! It's got ${reaction.likedFlavorNames().join(" and ")}. That's good!`, `Got anything ${reaction.missingFlavorNames()[0]}?`, "That's what this needs!"]
+                    return [`Oo! It's ${reaction.likedFlavorNames().join(" and ")}. That's good!`, `Got anything ${reaction.missingFlavorNames()[0]}?`, "That's what this needs!"]
                 },
                 (reaction) => {
                     return ["Yuck!", `Why would I want to drink something ${reaction.dislikedFlavorNames()[0]}?`, "Gotta run!"]
@@ -237,7 +238,7 @@ export function main() {
                 "\n[[ Like ]]\n", patron.dialogue.like.join("\n"),
                 "\n[[ Missing something (has 1 good thing) ]]\n", patron.dialogue.missingSomething(new Reaction([Flavor.Bitter], [], [Flavor.Energizing, Flavor.Crisp])).join("\n"),
                 "\n[[ Missing something (has 2 good thing) ]]\n", patron.dialogue.missingSomething(new Reaction([Flavor.Bitter, Flavor.Funny], [], [Flavor.Energizing, Flavor.Crisp])).join("\n"),
-                "\n[[ Dislike ]]\n", patron.dialogue.dislike(new Reaction([], [Flavor.Toxic, Flavor.Gross], [])).join("\n"),
+                "\n[[ Dislike ]]\n", patron.dialogue.dislike(new Reaction([], [Flavor.Toxic, Flavor.Nasty], [])).join("\n"),
             )
         }
 
@@ -364,72 +365,29 @@ export function main() {
         }
     }))
 
-    let gameStarted = { val: false }
-
     prop_patron.position = prop_patron.exitPosition.clone()
 
-    let titleScreen = new Container()
-    game.rootContainer.addChild(titleScreen)
-
-    let titleText = new Text("Beep 'n' Zap: Barry's Special",
-        {
-            fontFamily: "Concert One",
-            fill: ['#ffffff'],
-            stroke: 0x000000,
-            strokeThickness: 4,
-            fontSize: 55,
-            wordWrapWidth: 700,
-            wordWrap: true,
-            align: "center"
-        })
-    titleScreen.addChild(titleText)
-    titleText.anchor.set(0.5)
-    titleText.position = addPoints(origin, new Point(0, -200))
-
-    let subtitleText = new Text("By NotExplosive",
-        {
-            fontFamily: "Concert One",
-            fill: ['#ffffff'],
-            stroke: 0x000000,
-            strokeThickness: 4,
-            fontSize: 35,
-            wordWrapWidth: 700,
-            wordWrap: true,
-            align: "center"
-        })
-    titleScreen.addChild(subtitleText)
-    subtitleText.anchor.set(0.5, 0)
-    subtitleText.position = addPoints(origin, new Point(0, -150))
-
-    let clickText = new Text("Click anywhere to begin\nScroll down to learn how to play",
-        {
-            fontFamily: "Concert One",
-            fill: ['#ffffff'],
-            stroke: 0x000000,
-            strokeThickness: 4,
-            fontSize: 35,
-            wordWrapWidth: 700,
-            wordWrap: true,
-            align: "center"
-        })
-    titleScreen.addChild(clickText)
-    clickText.anchor.set(0.5, 0)
-    clickText.position = addPoints(origin, new Point(0, 100))
-
+    let titleScreen = createTitleScreen(origin)
+    let endScreen = createEndScreen(origin)
+    endScreen.visible = false
 
     updateables.push({
         update: () => {
-            if (!gameStarted.val) {
+            if (!gameState.started) {
                 game.requestInteractive()
                 game.requestButtonModeTrue()
-                game.onClick.addCallback(() => { gameStarted.val = true })
+                game.onClick.addCallback(() => { gameState.started = true })
             }
 
-            titleScreen.visible = !gameStarted.val
+            if (gameState.finished) {
+                endScreen.visible = true
+            }
+
+            titleScreen.visible = !gameState.started
         }
     })
 
-    animationTween.add(new WaitUntilTween(() => gameStarted.val == true))
+    animationTween.add(new WaitUntilTween(() => gameState.started == true))
     animate_patronEnters()
 }
 
@@ -643,3 +601,110 @@ export function addPoints(left: Point, right: Point) {
 export function addIngredientToInventory(ingredient: Ingredient) {
     ingredientButtons.addIngredientButton(ingredient)
 }
+
+function createTitleScreen(origin: Point) {
+
+    let titleScreen = new Container()
+    game.rootContainer.addChild(titleScreen)
+
+    let titleText = new Text("Beep 'n' Zap: Barry's Special",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 55,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    titleScreen.addChild(titleText)
+    titleText.anchor.set(0.5)
+    titleText.position = addPoints(origin, new Point(0, -200))
+
+    let subtitleText = new Text("By NotExplosive",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 35,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    titleScreen.addChild(subtitleText)
+    subtitleText.anchor.set(0.5, 0)
+    subtitleText.position = addPoints(origin, new Point(0, -150))
+
+    let clickText = new Text("Click anywhere to begin\nScroll down to learn how to play",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 35,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    titleScreen.addChild(clickText)
+    clickText.anchor.set(0.5, 0)
+    clickText.position = addPoints(origin, new Point(0, 100))
+
+    return titleScreen
+}
+
+function createEndScreen(origin: Point) {
+
+    let screen = new Container()
+    game.rootContainer.addChild(screen)
+
+    let titleText = new Text("The End!",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 55,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    screen.addChild(titleText)
+    titleText.anchor.set(0.5)
+    titleText.position = addPoints(origin, new Point(0, -200))
+
+    let subtitleText = new Text("Thanks for playing!",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 35,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    screen.addChild(subtitleText)
+    subtitleText.anchor.set(0.5, 0)
+    subtitleText.position = addPoints(origin, new Point(0, -150))
+
+    let urlText = new Text("notexplosive.net",
+        {
+            fontFamily: "Concert One",
+            fill: ['#ffffff'],
+            stroke: 0x000000,
+            strokeThickness: 4,
+            fontSize: 35,
+            wordWrapWidth: 700,
+            wordWrap: true,
+            align: "center"
+        })
+    screen.addChild(urlText)
+    urlText.anchor.set(0.5, 0)
+    urlText.position = addPoints(origin, new Point(0, 100))
+
+    return screen
+}
+

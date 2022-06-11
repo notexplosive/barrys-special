@@ -15,7 +15,7 @@ export class Flavor {
     static readonly Dizzy = new Flavor("Dizzying")
     static readonly Toxic = new Flavor("Toxic")
     static readonly Bitter = new Flavor("Bitter")
-    static readonly Gross = new Flavor("Gross")
+    static readonly Nasty = new Flavor("Nasty")
     static readonly Mushy = new Flavor("Mushy")
     static readonly Hairy = new Flavor("Hairy")
     static readonly Energizing = new Flavor("Energizing")

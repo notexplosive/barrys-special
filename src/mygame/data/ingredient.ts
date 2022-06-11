@@ -66,7 +66,7 @@ export class Ingredient {
             new FlavorProfile()
                 .set(Flavor.Oily, 1)
                 .set(Flavor.Bitter, 1)
-                .set(Flavor.Mushy, 1)
+                .set(Flavor.Hairy, 1)
         ),
         new Ingredient(
             8,
@@ -75,7 +75,6 @@ export class Ingredient {
             0x23674e,
             new FlavorProfile()
                 .set(Flavor.Funny, 1)
-                .set(Flavor.Gross, 1)
                 .set(Flavor.Mushy, 1)
         ),
         new Ingredient(
@@ -84,7 +83,7 @@ export class Ingredient {
             null,
             0xf9a31b,
             new FlavorProfile()
-                .set(Flavor.Gross, 1)
+                .set(Flavor.Nasty, 1)
                 .set(Flavor.Crisp, 1)
         ),
         new Ingredient(
